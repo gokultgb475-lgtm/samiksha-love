@@ -1,34 +1,51 @@
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(pointer: fine)').matches;
 const mobileLike = window.matchMedia('(max-width: 820px)').matches;
 
-const loader = document.getElementById('page-loader');
+const root = document.documentElement;
+const body = document.body;
+const introScreen = document.getElementById('intro-screen');
+const introTyping = document.getElementById('intro-typing');
+const ambientShell = document.getElementById('ambient-shell');
 const heartField = document.getElementById('heart-field');
+const sparkleField = document.getElementById('sparkle-field');
+const cursorGlow = document.getElementById('cursor-glow');
+const cursorRing = document.getElementById('cursor-ring');
+const beginButton = document.getElementById('begin-button');
 const bgMusic = document.getElementById('bg-music');
 const musicToggle = document.getElementById('music-toggle');
 const musicIcon = document.getElementById('music-icon');
 const musicStatus = document.getElementById('music-status');
-const heroTyping = document.getElementById('hero-typing');
-const letterTyping = document.getElementById('letter-typing');
-const daysCounter = document.getElementById('days-counter');
-const daysInline = document.getElementById('days-inline');
+const videoSection = document.getElementById('memory-video-section');
 const video = document.getElementById('memory-video');
+const videoSource = video.querySelector('source');
 const videoToggle = document.getElementById('video-toggle');
 const videoIcon = document.getElementById('video-icon');
 const videoCard = document.querySelector('.video-card');
+const letterTyping = document.getElementById('letter-typing');
+const daysCounter = document.getElementById('days-counter');
+const daysInline = document.getElementById('days-inline');
 const surpriseButton = document.getElementById('surprise-button');
 const surpriseModal = document.getElementById('surprise-modal');
 const lightbox = document.getElementById('lightbox');
 const lightboxImage = document.getElementById('lightbox-image');
 const lightboxCaption = document.getElementById('lightbox-caption');
 
-let audioLockedByUser = false;
-let heroTyped = false;
+let experienceStarted = false;
+let videoLoaded = false;
 let letterTyped = false;
 let counterAnimated = false;
+let sparkleTimer = null;
+let musicWasPlayingBeforeVideo = false;
+let targetCursorX = window.innerWidth / 2;
+let targetCursorY = window.innerHeight / 2;
+let currentCursorX = targetCursorX;
+let currentCursorY = targetCursorY;
+let cursorAnimating = false;
 
 function syncBodyLock() {
-  const shouldLock = !surpriseModal.hidden || !lightbox.hidden;
-  document.body.classList.toggle('is-locked', shouldLock);
+  const modalOpen = !surpriseModal.hidden || !lightbox.hidden;
+  body.classList.toggle('is-locked', body.classList.contains('intro-active') || modalOpen);
 }
 
 function escapeHtml(value) {
@@ -40,18 +57,26 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function highlightLoveWords(text) {
-  return escapeHtml(text)
+function formatMultilineText(text) {
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+function formatLetterText(text) {
+  return formatMultilineText(text)
+    .replace(/Samiksha/g, '<span class="highlight">Samiksha</span>')
     .replace(/❤️/g, '<span class="highlight">❤️</span>')
-    .replace(/\bforever\b/gi, '<span class="highlight">$&</span>')
-    .replace(/\blove\b/gi, '<span class="highlight">$&</span>');
+    .replace(/💖/g, '<span class="highlight">💖</span>')
+    .replace(/\bbrighter\b/gi, '<span class="highlight">$&</span>')
+    .replace(/\bcherish\b/gi, '<span class="highlight">$&</span>')
+    .replace(/\bheart\b/gi, '<span class="highlight">$&</span>')
+    .replace(/\bForever\b/gi, '<span class="highlight">$&</span>');
 }
 
 function typeText(element, text, options = {}) {
   const {
-    speed = 42,
-    onFinish = null,
-    formatter = null
+    speed = 40,
+    formatter = formatMultilineText,
+    onFinish = null
   } = options;
 
   if (!element) {
@@ -60,67 +85,104 @@ function typeText(element, text, options = {}) {
 
   if (prefersReducedMotion) {
     element.classList.remove('typing-caret');
-    element.innerHTML = formatter ? formatter(text) : escapeHtml(text);
+    element.innerHTML = formatter(text);
     if (onFinish) {
       onFinish();
     }
     return;
   }
 
-  const chars = Array.from(text);
+  const tokens = Array.from(text);
   let index = 0;
   element.classList.add('typing-caret');
   element.innerHTML = '';
 
-  const tick = () => {
+  function step() {
     index += 1;
-    const current = chars.slice(0, index).join('');
-    element.innerHTML = formatter ? formatter(current) : escapeHtml(current);
-
-    if (index < chars.length) {
-      window.setTimeout(tick, speed);
+    element.innerHTML = formatter(tokens.slice(0, index).join(''));
+    if (index < tokens.length) {
+      window.setTimeout(step, speed);
     } else {
       element.classList.remove('typing-caret');
-      if (formatter) {
-        element.innerHTML = formatter(text);
-      }
+      element.innerHTML = formatter(text);
       if (onFinish) {
         onFinish();
       }
     }
-  };
+  }
 
-  tick();
+  step();
 }
 
-function createHearts() {
-  const count = mobileLike ? 10 : 18;
-  const icons = ['❤', '♡', '♥'];
+function createHeartParticles() {
+  const total = mobileLike ? 12 : 20;
+  const icons = ['❤', '♥', '♡'];
 
-  for (let index = 0; index < count; index += 1) {
+  for (let index = 0; index < total; index += 1) {
     const heart = document.createElement('span');
     heart.className = 'heart-particle';
     heart.textContent = icons[index % icons.length];
     heart.style.left = `${Math.random() * 100}%`;
-    heart.style.fontSize = `${0.7 + Math.random() * 1.1}rem`;
-    heart.style.setProperty('--scale', (0.7 + Math.random() * 1.2).toFixed(2));
+    heart.style.fontSize = `${0.7 + Math.random() * 1.15}rem`;
+    heart.style.setProperty('--scale', (0.75 + Math.random() * 1.25).toFixed(2));
     heart.style.setProperty('--opacity', (0.2 + Math.random() * 0.5).toFixed(2));
-    heart.style.setProperty('--drift', `${-40 + Math.random() * 80}px`);
-    heart.style.animationDuration = `${12 + Math.random() * 18}s`;
+    heart.style.setProperty('--drift-x', `${-70 + Math.random() * 140}px`);
+    heart.style.animationDuration = `${14 + Math.random() * 18}s`;
     heart.style.animationDelay = `${Math.random() * 10}s`;
     heartField.appendChild(heart);
   }
 }
 
+function createSparkle() {
+  if (!experienceStarted || prefersReducedMotion) {
+    return;
+  }
+
+  const sparkle = document.createElement('span');
+  sparkle.className = 'sparkle';
+  sparkle.style.left = `${6 + Math.random() * 88}%`;
+  sparkle.style.top = `${8 + Math.random() * 78}%`;
+  sparkle.style.setProperty('--size', `${4 + Math.random() * 7}px`);
+  sparkle.style.setProperty('--duration', `${2.8 + Math.random() * 1.8}s`);
+  sparkle.style.setProperty('--sparkle-x', `${-18 + Math.random() * 36}px`);
+  sparkleField.appendChild(sparkle);
+  window.setTimeout(() => sparkle.remove(), 4200);
+}
+
+function startSparkles() {
+  if (sparkleTimer || prefersReducedMotion) {
+    return;
+  }
+
+  for (let index = 0; index < (mobileLike ? 3 : 5); index += 1) {
+    window.setTimeout(createSparkle, index * 180);
+  }
+
+  sparkleTimer = window.setInterval(createSparkle, mobileLike ? 1500 : 950);
+}
+
+function startExperience() {
+  if (experienceStarted) {
+    return;
+  }
+
+  experienceStarted = true;
+  body.classList.add('experience-started');
+  beginButton.classList.add('is-awake');
+  beginButton.textContent = 'The Story Is Awake ✨';
+  startSparkles();
+}
+
 function updateMusicUI(isPlaying) {
-  musicToggle.classList.toggle('is-paused', !isPlaying);
   musicIcon.textContent = isPlaying ? '❚❚' : '♪';
-  musicStatus.textContent = isPlaying ? 'now playing' : 'tap to play';
+  musicStatus.textContent = isPlaying ? 'now playing' : (experienceStarted ? 'paused' : 'waiting for your tap');
   musicToggle.setAttribute('aria-label', isPlaying ? 'Pause romantic music' : 'Play romantic music');
 }
 
 async function playMusic() {
   try {
+    startExperience();
+    musicWasPlayingBeforeVideo = false;
     if (!video.paused) {
       video.pause();
     }
@@ -131,61 +193,37 @@ async function playMusic() {
   }
 }
 
-function pauseMusic(markUserChoice = false) {
-  if (markUserChoice) {
-    audioLockedByUser = true;
-  }
+function pauseMusic() {
   bgMusic.pause();
   updateMusicUI(false);
 }
 
-musicToggle.addEventListener('click', async () => {
-  audioLockedByUser = !bgMusic.paused;
-  if (bgMusic.paused) {
-    audioLockedByUser = false;
-    await playMusic();
-  } else {
-    pauseMusic(true);
-  }
-});
-
-bgMusic.addEventListener('play', () => updateMusicUI(true));
-bgMusic.addEventListener('pause', () => updateMusicUI(false));
-
-async function tryAutoplayMusic() {
-  if (prefersReducedMotion) {
+function ensureVideoLoaded() {
+  if (videoLoaded || !videoSource.dataset.src) {
     return;
   }
 
-  try {
-    await bgMusic.play();
-    updateMusicUI(true);
-  } catch (error) {
-    updateMusicUI(false);
-  }
+  videoSource.src = videoSource.dataset.src;
+  video.load();
+  videoLoaded = true;
 }
-
-function unlockAudioAfterInteraction() {
-  if (!bgMusic.paused || audioLockedByUser) {
-    return;
-  }
-  playMusic();
-}
-
-window.addEventListener('pointerdown', unlockAudioAfterInteraction, { once: true });
-window.addEventListener('keydown', unlockAudioAfterInteraction, { once: true });
 
 function updateVideoUI() {
-  const playing = !video.paused && !video.ended;
-  videoCard.classList.toggle('is-playing', playing);
-  videoIcon.textContent = playing ? '❚❚' : '▶';
-  videoToggle.setAttribute('aria-label', playing ? 'Pause video memory' : 'Play video memory');
+  const isPlaying = !video.paused && !video.ended;
+  videoCard.classList.toggle('is-playing', isPlaying);
+  videoIcon.textContent = isPlaying ? '❚❚' : '▶';
+  videoToggle.setAttribute('aria-label', isPlaying ? 'Pause our memory video' : 'Play our memory video');
 }
 
-async function toggleVideo() {
+async function toggleVideoPlayback() {
+  ensureVideoLoaded();
+
   try {
     if (video.paused) {
-      pauseMusic(false);
+      musicWasPlayingBeforeVideo = !bgMusic.paused;
+      if (musicWasPlayingBeforeVideo) {
+        bgMusic.pause();
+      }
       video.muted = false;
       video.volume = 1;
       await video.play();
@@ -197,49 +235,50 @@ async function toggleVideo() {
   }
 }
 
-videoToggle.addEventListener('click', toggleVideo);
-video.addEventListener('click', () => {
-  if (mobileLike && video.paused) {
-    toggleVideo();
-  }
-});
-video.addEventListener('play', updateVideoUI);
-video.addEventListener('pause', updateVideoUI);
-video.addEventListener('ended', updateVideoUI);
-
 function animateCounter() {
   if (counterAnimated) {
     return;
   }
 
   counterAnimated = true;
-  const startDate = new Date('2024-02-14T00:00:00');
-  const today = new Date();
-  const diffDays = Math.max(0, Math.floor((today - startDate) / 86400000));
+  const days = getDaysTogether();
   const duration = prefersReducedMotion ? 1 : 1800;
-  const start = performance.now();
+  const startTime = performance.now();
 
-  const frame = now => {
-    const progress = Math.min((now - start) / duration, 1);
+  function frame(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
-    const value = Math.floor(diffDays * eased);
+    const value = Math.floor(days * eased);
     daysCounter.textContent = String(value).padStart(3, '0');
-    daysInline.textContent = value;
+    daysInline.textContent = String(value);
 
     if (progress < 1) {
       requestAnimationFrame(frame);
     } else {
-      daysCounter.textContent = String(diffDays).padStart(3, '0');
-      daysInline.textContent = diffDays;
+      daysCounter.textContent = String(days).padStart(3, '0');
+      daysInline.textContent = String(days);
     }
-  };
+  }
 
   requestAnimationFrame(frame);
 }
 
+function getDaysTogether() {
+  const startDate = new Date('2024-02-14T00:00:00');
+  return Math.max(0, Math.floor((Date.now() - startDate.getTime()) / 86400000));
+}
+
+function refreshCounterInstant() {
+  const days = getDaysTogether();
+  daysCounter.textContent = String(days).padStart(3, '0');
+  daysInline.textContent = String(days);
+}
+
 function revealSurprise() {
   surpriseModal.hidden = false;
+  body.classList.add('pulse-bg');
   syncBodyLock();
+  window.setTimeout(() => body.classList.remove('pulse-bg'), 1000);
 }
 
 function closeSurprise() {
@@ -248,7 +287,7 @@ function closeSurprise() {
 }
 
 function createHeartExplosion(originX, originY) {
-  const total = mobileLike ? 18 : 30;
+  const total = mobileLike ? 22 : 36;
   const icons = ['❤', '♥', '♡', '💖'];
 
   for (let index = 0; index < total; index += 1) {
@@ -257,22 +296,12 @@ function createHeartExplosion(originX, originY) {
     heart.textContent = icons[index % icons.length];
     heart.style.left = `${originX}px`;
     heart.style.top = `${originY}px`;
-    heart.style.setProperty('--x', `${-90 + Math.random() * 180}px`);
-    heart.style.setProperty('--y', `${-120 + Math.random() * 120}px`);
+    heart.style.setProperty('--explode-x', `${-120 + Math.random() * 240}px`);
+    heart.style.setProperty('--explode-y', `${-170 + Math.random() * 160}px`);
     document.body.appendChild(heart);
-    window.setTimeout(() => heart.remove(), 950);
+    window.setTimeout(() => heart.remove(), 1050);
   }
 }
-
-surpriseButton.addEventListener('click', event => {
-  const rect = event.currentTarget.getBoundingClientRect();
-  createHeartExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
-  revealSurprise();
-});
-
-document.querySelectorAll('[data-close-surprise]').forEach(node => {
-  node.addEventListener('click', closeSurprise);
-});
 
 function openLightbox(src, caption) {
   lightbox.hidden = false;
@@ -286,6 +315,146 @@ function closeLightbox() {
   lightboxImage.removeAttribute('src');
   syncBodyLock();
 }
+
+function updateScrollParallax() {
+  const shift = Math.min(window.scrollY * -0.035, 0);
+  root.style.setProperty('--scroll-shift', `${shift.toFixed(2)}px`);
+}
+
+function animateCursor() {
+  currentCursorX += (targetCursorX - currentCursorX) * 0.16;
+  currentCursorY += (targetCursorY - currentCursorY) * 0.16;
+
+  cursorGlow.style.transform = `translate(${currentCursorX - 38}px, ${currentCursorY - 38}px)`;
+  cursorRing.style.transform = `translate(${currentCursorX - 19}px, ${currentCursorY - 19}px)`;
+
+  if (Math.abs(targetCursorX - currentCursorX) > 0.2 || Math.abs(targetCursorY - currentCursorY) > 0.2) {
+    requestAnimationFrame(animateCursor);
+  } else {
+    cursorAnimating = false;
+  }
+}
+
+function setupCursorGlow() {
+  if (!finePointer || prefersReducedMotion) {
+    return;
+  }
+
+  document.addEventListener('mousemove', event => {
+    targetCursorX = event.clientX;
+    targetCursorY = event.clientY;
+    cursorGlow.style.opacity = '1';
+    cursorRing.style.opacity = '1';
+
+    const offsetX = ((event.clientX / window.innerWidth) - 0.5) * 18;
+    const offsetY = ((event.clientY / window.innerHeight) - 0.5) * 14;
+    root.style.setProperty('--parallax-x', `${offsetX.toFixed(2)}px`);
+    root.style.setProperty('--parallax-y', `${offsetY.toFixed(2)}px`);
+
+    if (!cursorAnimating) {
+      cursorAnimating = true;
+      requestAnimationFrame(animateCursor);
+    }
+  });
+
+  document.addEventListener('mouseleave', () => {
+    cursorGlow.style.opacity = '0';
+    cursorRing.style.opacity = '0';
+  });
+}
+
+function handleReveal(entries, observer) {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) {
+      return;
+    }
+
+    const delay = entry.target.dataset.delay || '0s';
+    entry.target.style.transitionDelay = delay;
+    entry.target.classList.add('reveal--visible');
+
+    if (entry.target.id === 'letter-section' && !letterTyped) {
+      letterTyped = true;
+      typeText(letterTyping, letterTyping.dataset.text, {
+        speed: 26,
+        formatter: formatLetterText
+      });
+    }
+
+    if (entry.target.id === 'counter-section') {
+      animateCounter();
+    }
+
+    observer.unobserve(entry.target);
+  });
+}
+
+function startIntroSequence() {
+  typeText(introTyping, introTyping.dataset.text, {
+    speed: 42,
+    formatter: text => escapeHtml(text)
+  });
+
+  const delay = prefersReducedMotion ? 450 : 3000;
+  window.setTimeout(() => {
+    body.classList.remove('intro-active');
+    body.classList.add('intro-complete');
+    introScreen.classList.add('is-hidden');
+    syncBodyLock();
+  }, delay);
+}
+
+beginButton.addEventListener('click', async () => {
+  await playMusic();
+});
+
+musicToggle.addEventListener('click', async () => {
+  if (bgMusic.paused) {
+    await playMusic();
+  } else {
+    pauseMusic();
+  }
+});
+
+bgMusic.addEventListener('play', () => updateMusicUI(true));
+bgMusic.addEventListener('pause', () => updateMusicUI(false));
+
+videoToggle.addEventListener('click', toggleVideoPlayback);
+video.addEventListener('click', () => {
+  if (mobileLike && video.paused) {
+    toggleVideoPlayback();
+  }
+});
+
+video.addEventListener('play', () => {
+  updateVideoUI();
+});
+
+video.addEventListener('pause', async () => {
+  updateVideoUI();
+  if (musicWasPlayingBeforeVideo && experienceStarted) {
+    musicWasPlayingBeforeVideo = false;
+    await playMusic();
+  }
+});
+
+video.addEventListener('ended', async () => {
+  updateVideoUI();
+  if (musicWasPlayingBeforeVideo && experienceStarted) {
+    musicWasPlayingBeforeVideo = false;
+    await playMusic();
+  }
+});
+
+surpriseButton.addEventListener('click', event => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  createHeartExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  revealSurprise();
+});
+
+document.querySelectorAll('[data-close-surprise]').forEach(node => {
+  node.addEventListener('click', closeSurprise);
+});
 
 document.querySelectorAll('.gallery-card').forEach(card => {
   card.addEventListener('click', () => {
@@ -304,54 +473,41 @@ document.addEventListener('keydown', event => {
   }
 });
 
-function handleReveal(entries, observer) {
+const revealObserver = new IntersectionObserver(handleReveal, {
+  threshold: mobileLike ? 0.1 : 0.18
+});
+
+document.querySelectorAll('.reveal').forEach(node => {
+  if (!node.classList.contains('reveal--visible')) {
+    revealObserver.observe(node);
+  }
+});
+
+const videoLoadObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) {
       return;
     }
-
-    entry.target.classList.add('reveal--visible');
-
-    if (entry.target.id === 'letter-section' && !letterTyped) {
-      letterTyped = true;
-      typeText(letterTyping, letterTyping.dataset.text, {
-        speed: 26,
-        formatter: highlightLoveWords
-      });
-    }
-
-    if (entry.target.id === 'counter-section') {
-      animateCounter();
-    }
-
-    observer.unobserve(entry.target);
+    ensureVideoLoaded();
+    videoLoadObserver.disconnect();
   });
-}
+}, { rootMargin: '280px 0px' });
 
-const revealObserver = new IntersectionObserver(handleReveal, {
-  threshold: mobileLike ? 0.12 : 0.2
-});
+videoLoadObserver.observe(videoSection);
 
-document.querySelectorAll('.reveal').forEach(section => {
-  if (!section.classList.contains('reveal--visible')) {
-    revealObserver.observe(section);
-  }
-});
+window.addEventListener('scroll', updateScrollParallax, { passive: true });
+window.addEventListener('resize', updateScrollParallax, { passive: true });
 
 window.addEventListener('load', () => {
-  createHearts();
+  createHeartParticles();
+  setupCursorGlow();
   updateMusicUI(false);
-
-  if (!heroTyped) {
-    heroTyped = true;
-    typeText(heroTyping, heroTyping.dataset.text, { speed: 58, formatter: highlightLoveWords });
-  }
-
-  window.setTimeout(() => {
-    loader.classList.add('is-hidden');
-    document.body.classList.remove('is-loading');
-  }, prefersReducedMotion ? 40 : 900);
-
-  tryAutoplayMusic();
   updateVideoUI();
+  updateScrollParallax();
+  startIntroSequence();
+  window.setInterval(() => {
+    if (counterAnimated) {
+      refreshCounterInstant();
+    }
+  }, 60000);
 });

@@ -4,135 +4,125 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>For Samiksha ❤️</title>
-  <meta name="description" content="A cinematic little love story for Samiksha.">
+  <meta name="description" content="A high-end cinematic love story for Samiksha.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
 </head>
-<body class="is-loading">
-  <div class="page-loader" id="page-loader" aria-hidden="true">
-    <div class="page-loader__glow"></div>
-    <p class="page-loader__title">Loading something special for Samiksha...</p>
-    <p class="page-loader__sub">A little cinematic love story is about to begin.</p>
+<body class="intro-active is-locked">
+  <div class="intro-screen" id="intro-screen">
+    <div class="intro-screen__backdrop"></div>
+    <div class="intro-screen__content">
+      <p class="intro-screen__eyebrow">A little surprise</p>
+      <h1 class="intro-screen__title glow-text">Hey Samiksha ❤️</h1>
+      <p
+        class="intro-screen__typing"
+        id="intro-typing"
+        data-text="I made something special just for you..."
+      ></p>
+    </div>
   </div>
 
-  <div class="ambient-shell" aria-hidden="true">
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <div class="ambient-shell" id="ambient-shell" aria-hidden="true">
     <div class="ambient-shell__orb ambient-shell__orb--one"></div>
     <div class="ambient-shell__orb ambient-shell__orb--two"></div>
+    <div class="ambient-shell__mist"></div>
     <div class="ambient-shell__grain"></div>
   </div>
+
   <div class="heart-field" id="heart-field" aria-hidden="true"></div>
+  <div class="sparkle-field" id="sparkle-field" aria-hidden="true"></div>
 
   <audio id="bg-music" loop preload="auto">
     <source src="./assets/audio/nenjukkule.webm" type="audio/webm">
   </audio>
 
-  <button class="music-fab is-paused" id="music-toggle" type="button" aria-label="Play romantic music">
+  <button class="music-fab" id="music-toggle" type="button" aria-label="Play romantic music">
     <span class="music-fab__icon" id="music-icon">♪</span>
     <span class="music-fab__copy">
       <strong>Nenjukkule</strong>
-      <small id="music-status">tap to play</small>
+      <small id="music-status">waiting for your tap</small>
     </span>
   </button>
 
-  <main>
+  <main class="main-stage" id="main-stage">
     <section class="hero section" id="home">
+      <div class="hero__halo"></div>
       <div class="hero__content reveal reveal--visible">
-        <p class="eyebrow">For Samiksha</p>
-        <h1 class="hero__title glow-text">A love story dressed like a night sky.</h1>
-        <p
-          class="hero__typing"
-          id="hero-typing"
-          data-text="Hi Samiksha ❤️, This is something special just for you..."
-        ></p>
-        <p class="hero__subtext">
-          Every section below is a small scene, a little feeling, and one more reason you mean so much to me.
+        <p class="eyebrow">A digital love story</p>
+        <h1 class="hero__title glow-text">Every chapter in my heart still leads back to you.</h1>
+        <p class="hero__lead">
+          I turned feelings into light, motion, music, and memories... just to make you smile tonight.
         </p>
-        <div class="hero__actions">
-          <a class="button button--primary" href="#memory-video-section">Begin the story</a>
-          <a class="button button--ghost" href="#letter-section">Read my letter</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section reveal" id="memory-video-section">
-      <div class="section-copy">
-        <p class="eyebrow">A moving memory</p>
-        <h2 class="section-title">A moment I never want to stop replaying.</h2>
-        <p class="section-subtitle">
-          Press play and let this little memory breathe for a while.
-        </p>
-      </div>
-
-      <div class="video-card">
-        <video
-          id="memory-video"
-          class="video-card__media"
-          playsinline
-          preload="metadata"
-          poster="./assets/video/video-memories-poster.jpg"
-        >
-          <source src="./assets/video/video-memories.mp4" type="video/mp4">
-        </video>
-
-        <div class="video-card__veil"></div>
-        <button class="video-card__play" id="video-toggle" type="button" aria-label="Play video memory">
-          <span id="video-icon">▶</span>
+        <button class="button button--primary button--begin" id="begin-button" type="button">
+          Tap to Begin ❤️
         </button>
-
-        <div class="video-card__caption">
-          <p>One more proof that life became softer and brighter with you in it.</p>
-          <span>tap to play with sound</span>
-        </div>
+        <p class="hero__hint">Music begins with your touch. After that, the whole story wakes up.</p>
       </div>
     </section>
 
-    <section class="section reveal" id="letter-section">
+    <section class="section reveal" id="build-up-section" data-delay="0.06s">
       <div class="section-copy">
-        <p class="eyebrow">Love letter</p>
-        <h2 class="section-title">If my heart could write, it would sound like this.</h2>
+        <p class="eyebrow">Emotional build-up</p>
+        <h2 class="section-title">Before the memories, there is one truth I keep coming back to.</h2>
+        <div class="section-divider"><span></span></div>
       </div>
 
-      <article class="letter-card">
-        <span class="letter-card__seal">❤️</span>
-        <p class="letter-card__to">To Samiksha,</p>
-        <div
-          class="letter-card__message"
-          id="letter-typing"
-          data-text="You are the quiet warmth in all my loud days. In every little moment, I keep falling for your smile, your softness, and the way your presence feels like home. If there is one promise my heart keeps making, it is this: my love for you is real, it is gentle, and it wants forever."
-        ></div>
-      </article>
-    </section>
-
-    <section class="section reveal" id="counter-section">
-      <div class="counter-card">
-        <p class="eyebrow">Since February 14, 2024</p>
-        <h2 class="section-title">We’ve been together for <span id="days-inline">0</span> days ❤️</h2>
-        <div class="counter-card__number" id="days-counter">000</div>
-        <p class="counter-card__note">
-          And every single one of them has made my world feel a little more beautiful.
-        </p>
+      <div class="story-grid">
+        <article class="story-panel reveal" data-delay="0.12s">
+          <span class="story-panel__index">01</span>
+          <p>You made ordinary moments feel cinematic, like even silence had a beautiful soundtrack.</p>
+        </article>
+        <article class="story-panel reveal" data-delay="0.18s">
+          <span class="story-panel__index">02</span>
+          <p>Your smile still softens every hard day, and somehow turns heaviness into warmth.</p>
+        </article>
+        <article class="story-panel reveal" data-delay="0.24s">
+          <span class="story-panel__index">03</span>
+          <p>Being close to you made me understand that home can be a person, and for me that person is you.</p>
+        </article>
       </div>
     </section>
 
-    <section class="section reveal" id="surprise-section">
-      <div class="surprise-card">
-        <p class="eyebrow">One more little thing</p>
-        <h2 class="section-title">Because loving you should always come with surprises.</h2>
+    <section class="section reveal" id="memory-video-section" data-delay="0.08s">
+      <div class="section-copy">
+        <p class="eyebrow">Memories</p>
+        <h2 class="section-title">Our Memories Together ❤️</h2>
         <p class="section-subtitle">
-          Press the button when you want one more reminder of how special you are to me.
+          A few moving seconds that still feel bigger than words.
         </p>
-        <button class="button button--primary" id="surprise-button" type="button">
-          Click for a surprise 💖
-        </button>
+        <div class="section-divider"><span></span></div>
+      </div>
+
+      <div class="video-stage">
+        <div class="video-card">
+          <video
+            id="memory-video"
+            class="video-card__media"
+            playsinline
+            preload="none"
+            poster="./assets/video/video-memories-poster.jpg"
+          >
+            <source data-src="./assets/video/video-memories.mp4" type="video/mp4">
+          </video>
+          <div class="video-card__overlay"></div>
+          <button class="video-card__play" id="video-toggle" type="button" aria-label="Play our memory video">
+            <span id="video-icon">▶</span>
+          </button>
+        </div>
+        <p class="video-caption-bottom">Every moment with you is my favorite memory</p>
       </div>
     </section>
 
-    <section class="section reveal" id="gallery-section">
+    <section class="section reveal" id="gallery-section" data-delay="0.1s">
       <div class="section-copy">
-        <p class="eyebrow">Gallery</p>
-        <h2 class="section-title">A few frames from our little universe.</h2>
+        <p class="eyebrow">Photo gallery</p>
+        <h2 class="section-title">Small frames from a love that still feels unreal.</h2>
+        <div class="section-divider"><span></span></div>
       </div>
 
       <div class="gallery-grid">
@@ -151,19 +141,75 @@
       </div>
     </section>
 
-    <section class="section closing reveal" id="closing-section">
-      <p class="closing__line">Forever yours, Gokul ❤️</p>
+    <section class="section reveal" id="letter-section" data-delay="0.12s">
+      <div class="section-copy">
+        <p class="eyebrow">Love letter</p>
+        <h2 class="section-title">This is the part where I stop styling the feeling and just say it.</h2>
+        <div class="section-divider"><span></span></div>
+      </div>
+
+      <article class="letter-card">
+        <span class="letter-card__seal">✦</span>
+        <p class="letter-card__to">Samiksha ❤️,</p>
+        <div
+          class="letter-card__message"
+          id="letter-typing"
+          data-text="Samiksha ❤️,
+
+From the moment you entered my life,
+everything started to feel brighter.
+
+Your smile means everything to me,
+and every moment with you is a memory I cherish.
+
+This website is not just code…
+it's a piece of my heart, made just for you 💖
+
+Forever yours,
+Gokul ❤️"
+        ></div>
+      </article>
     </section>
+
+    <section class="section reveal" id="counter-section" data-delay="0.14s">
+      <div class="counter-card">
+        <p class="eyebrow">Our time</p>
+        <h2 class="section-title">We’ve been together for <span id="days-inline">0</span> days ❤️</h2>
+        <div class="counter-card__number" id="days-counter">000</div>
+        <p class="counter-card__note">
+          Ever since February 14, 2024, your love has been turning ordinary days into something unforgettable.
+        </p>
+      </div>
+    </section>
+
+    <section class="section reveal" id="surprise-section" data-delay="0.16s">
+      <div class="finale-card">
+        <p class="eyebrow">Interactive ending</p>
+        <h2 class="section-title">One last surprise before the story fades into a heartbeat.</h2>
+        <p class="section-subtitle">
+          Press this when you want the ending to glow a little brighter.
+        </p>
+        <button class="button button--primary finale-card__button" id="surprise-button" type="button">
+          Click for a Surprise 💖
+        </button>
+        <p class="finale-card__note">And even after the last frame, my heart still says your name.</p>
+      </div>
+    </section>
+
+    <footer class="site-footer reveal" id="footer-section" data-delay="0.18s">
+      <p class="site-footer__line">Made with ❤️ by Gokul</p>
+    </footer>
   </main>
 
   <div class="modal" id="surprise-modal" hidden>
     <div class="modal__backdrop" data-close-surprise></div>
     <div class="modal__panel">
       <button class="modal__close" type="button" data-close-surprise aria-label="Close surprise">×</button>
-      <p class="eyebrow">A secret little truth</p>
-      <h3>You are still my favorite thought.</h3>
+      <p class="eyebrow">The ending I wanted you to see</p>
+      <h3>I Love You So Much Samiksha ❤️</h3>
       <p>
-        If I could choose a thousand times, in a thousand different worlds, I would still find you, still hold your hand, and still choose this love.
+        Every line here, every glow, every beat of this page was made to carry one simple truth:
+        you matter to me more than words ever fully can.
       </p>
     </div>
   </div>

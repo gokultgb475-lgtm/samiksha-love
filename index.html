@@ -4,13 +4,227 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>For Samiksha ❤️</title>
-  <meta name="description" content="A high-end cinematic love story for Samiksha.">
+  <meta name="description" content="A cinematic love story book for Samiksha — open the pages and read your love story.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
 </head>
-<body class="intro-active is-locked">
+<body class="book-phase is-locked">
+  <!-- Ambient background -->
+  <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
+  <div class="ambient-shell" id="ambient-shell" aria-hidden="true">
+    <div class="ambient-shell__orb ambient-shell__orb--one"></div>
+    <div class="ambient-shell__orb ambient-shell__orb--two"></div>
+    <div class="ambient-shell__mist"></div>
+    <div class="ambient-shell__grain"></div>
+  </div>
+
+  <!-- Floating particles behind the book -->
+  <div class="heart-field" id="heart-field" aria-hidden="true"></div>
+  <div class="sparkle-field" id="sparkle-field" aria-hidden="true"></div>
+
+  <!-- Custom cursors -->
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ✦  THE BOOK EXPERIENCE                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="book-scene" id="book-scene">
+    <!-- Prompt text -->
+    <div class="book-prompt" id="book-prompt">
+      <p class="book-prompt__eyebrow">A love story written in light</p>
+      <p class="book-prompt__cta" id="book-cta">
+        <span class="key-hint">Press any key</span>
+        <span class="tap-hint">Tap</span>
+        to open the book
+      </p>
+      <div class="book-prompt__glow"></div>
+    </div>
+
+    <!-- 3D Book -->
+    <div class="book-wrapper" id="book-wrapper">
+      <div class="book" id="book">
+        <!-- Back cover (always visible behind) -->
+        <div class="book__back-cover">
+          <div class="back-cover__inner">
+            <p>Made with ❤️ by Gokul</p>
+          </div>
+        </div>
+
+        <!-- Pages (stacked, each flips left) -->
+        <div class="book__page" id="page-6" data-page="6">
+          <div class="page__front">
+            <div class="page-content page-content--finale">
+              <div class="page-ornament">✦</div>
+              <h2 class="page-title script-font">Forever & Always</h2>
+              <p class="page-text">Every line here, every glow, every beat of this page was made to carry one simple truth:</p>
+              <p class="page-text page-text--highlight">You matter to me more than words ever fully can.</p>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text page-text--signature">— Gokul ❤️</p>
+              <button class="book-enter-btn" id="enter-experience" type="button">
+                Enter the Full Experience ✨
+              </button>
+            </div>
+          </div>
+          <div class="page__back">
+            <div class="page-content">
+              <div class="page-number">vi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="book__page" id="page-5" data-page="5">
+          <div class="page__front">
+            <div class="page-content">
+              <div class="page-chapter">Chapter Five</div>
+              <h2 class="page-title">The Promise</h2>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text">This website is not just code… it's a piece of my heart, made just for you 💖</p>
+              <p class="page-text">Every pixel holds a feeling. Every animation carries an emotion. Every word is a whisper from my heart to yours.</p>
+              <p class="page-text page-text--italic">I promise to keep choosing you, every single day.</p>
+            </div>
+          </div>
+          <div class="page__back">
+            <div class="page-content">
+              <div class="page-number">v</div>
+              <p class="page-text page-text--quote">"In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine."</p>
+              <p class="page-text page-text--author">— Maya Angelou</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="book__page" id="page-4" data-page="4">
+          <div class="page__front">
+            <div class="page-content">
+              <div class="page-chapter">Chapter Four</div>
+              <h2 class="page-title">What You Mean To Me</h2>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text">Being close to you made me understand that home can be a person.</p>
+              <p class="page-text page-text--highlight">And for me, that person is you.</p>
+              <p class="page-text">You are my calm in every storm, my laughter in every silence, my reason in every chaos.</p>
+            </div>
+          </div>
+          <div class="page__back">
+            <div class="page-content">
+              <div class="page-number">iv</div>
+              <div class="page-doodle">
+                <span class="doodle-heart">❤️</span>
+                <span class="doodle-heart">💕</span>
+                <span class="doodle-heart">💖</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="book__page" id="page-3" data-page="3">
+          <div class="page__front">
+            <div class="page-content">
+              <div class="page-chapter">Chapter Three</div>
+              <h2 class="page-title">Your Smile</h2>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text">Your smile still softens every hard day, and somehow turns heaviness into warmth.</p>
+              <p class="page-text">When I see you smile, the entire universe pauses — just for a moment — and everything makes sense.</p>
+              <p class="page-text page-text--italic">That smile is my favorite place in the whole world.</p>
+            </div>
+          </div>
+          <div class="page__back">
+            <div class="page-content">
+              <div class="page-number">iii</div>
+              <p class="page-text page-text--quote">"I have found the one whom my soul loves."</p>
+              <p class="page-text page-text--author">— Song of Solomon 3:4</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="book__page" id="page-2" data-page="2">
+          <div class="page__front">
+            <div class="page-content">
+              <div class="page-chapter">Chapter Two</div>
+              <h2 class="page-title">Ordinary Became Beautiful</h2>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text">You made ordinary moments feel cinematic, like even silence had a beautiful soundtrack.</p>
+              <p class="page-text">Every little thing — a glance, a laugh, a quiet moment together — became a memory I hold close to my heart.</p>
+            </div>
+          </div>
+          <div class="page__back">
+            <div class="page-content">
+              <div class="page-number">ii</div>
+              <p class="page-text page-text--quote">"Whatever our souls are made of, his and mine are the same."</p>
+              <p class="page-text page-text--author">— Emily Brontë</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="book__page" id="page-1" data-page="1">
+          <div class="page__front">
+            <div class="page-content">
+              <div class="page-chapter">Chapter One</div>
+              <h2 class="page-title">The Beginning</h2>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text">Samiksha ❤️,</p>
+              <p class="page-text">From the moment you entered my life, everything started to feel brighter.</p>
+              <p class="page-text">This is not just a website. This is a love story — written in code, designed with feelings, and dedicated entirely to you.</p>
+              <p class="page-text page-text--italic">Turn the pages to read our story...</p>
+            </div>
+          </div>
+          <div class="page__back">
+            <div class="page-content page-content--dedication">
+              <p class="page-text page-text--small">This book is dedicated to</p>
+              <h2 class="page-title script-font">Samiksha</h2>
+              <p class="page-text page-text--small">the most beautiful chapter of my life</p>
+              <div class="page-divider"><span></span></div>
+              <p class="page-text page-text--date">Since February 14, 2024</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Front cover (top-most, flips to reveal page 1) -->
+        <div class="book__cover" id="book-cover">
+          <div class="cover__front">
+            <div class="cover__texture"></div>
+            <div class="cover__border">
+              <div class="cover__corner cover__corner--tl"></div>
+              <div class="cover__corner cover__corner--tr"></div>
+              <div class="cover__corner cover__corner--bl"></div>
+              <div class="cover__corner cover__corner--br"></div>
+            </div>
+            <div class="cover__content">
+              <div class="cover__ornament-top">❦</div>
+              <p class="cover__subtitle">A Digital Love Story</p>
+              <h1 class="cover__title">Our Love<br>Story</h1>
+              <div class="cover__divider"><span></span><span class="cover__diamond">◆</span><span></span></div>
+              <p class="cover__author">Gokul & Samiksha</p>
+              <p class="cover__year">2024 — Forever</p>
+              <div class="cover__ornament-bottom">❦</div>
+            </div>
+            <div class="cover__spine-shadow"></div>
+          </div>
+          <div class="cover__back">
+            <div class="cover__back-texture"></div>
+            <div class="cover__back-content">
+              <p class="page-text page-text--epigraph">"Every love story is beautiful, but ours is my favorite."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="book-nav" id="book-nav">
+      <button class="book-nav__btn book-nav__btn--prev" id="prev-page" type="button" aria-label="Previous page">
+        <span>‹</span>
+      </button>
+      <div class="book-nav__indicator" id="page-indicator">Cover</div>
+      <button class="book-nav__btn book-nav__btn--next" id="next-page" type="button" aria-label="Next page">
+        <span>›</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ✦  MAIN WEBSITE (hidden until book ends)   -->
+  <!-- ═══════════════════════════════════════════ -->
   <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
   <nav class="floating-nav" id="floating-nav" aria-label="Jump to section">
@@ -24,33 +238,6 @@
   </nav>
 
   <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
-  <div class="intro-screen" id="intro-screen">
-    <div class="intro-screen__backdrop"></div>
-    <div class="intro-screen__content">
-      <p class="intro-screen__eyebrow">A little surprise</p>
-      <h1 class="intro-screen__title glow-text">Hey Samiksha ❤️</h1>
-      <p
-        class="intro-screen__typing"
-        id="intro-typing"
-        data-text="I made something special just for you..."
-      ></p>
-    </div>
-  </div>
-
-  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
-
-  <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
-
-  <div class="ambient-shell" id="ambient-shell" aria-hidden="true">
-    <div class="ambient-shell__orb ambient-shell__orb--one"></div>
-    <div class="ambient-shell__orb ambient-shell__orb--two"></div>
-    <div class="ambient-shell__mist"></div>
-    <div class="ambient-shell__grain"></div>
-  </div>
-
-  <div class="heart-field" id="heart-field" aria-hidden="true"></div>
-  <div class="sparkle-field" id="sparkle-field" aria-hidden="true"></div>
 
   <audio id="bg-music" loop preload="auto">
     <source src="./assets/audio/nenjukkule.webm" type="audio/webm">
@@ -79,7 +266,7 @@
         <p class="eyebrow">A digital love story</p>
         <h1 class="hero__title glow-text">Every chapter in my heart still leads back to you.</h1>
         <p class="hero__lead">
-          I turned feelings into light, motion, music, and memories... just to make you smile tonight.
+          I turned feelings into light, motion, music, and memories… just to make you smile tonight.
         </p>
         <button class="button button--primary button--begin" id="begin-button" type="button">
           Tap to Begin ❤️
@@ -108,39 +295,6 @@
           <span class="story-panel__index">03</span>
           <p>Being close to you made me understand that home can be a person, and for me that person is you.</p>
         </article>
-      </div>
-    </section>
-
-    <section class="section reveal quotes-section" id="quotes-section" data-delay="0.08s">
-      <div class="section-copy">
-        <p class="eyebrow">Words from my heart</p>
-        <h2 class="section-title">Things I want you to always remember</h2>
-        <div class="section-divider"><span></span></div>
-      </div>
-      <div class="quotes-carousel" id="quotes-carousel">
-        <div class="quotes-carousel__track" id="quotes-track">
-          <blockquote class="quote-card is-active">
-            <p class="quote-card__text">“You are the reason I believe in magic, because how else could someone so perfect exist?”</p>
-            <span class="quote-card__dash">—</span>
-          </blockquote>
-          <blockquote class="quote-card">
-            <p class="quote-card__text">“Every love story is beautiful, but ours is my absolute favorite.”</p>
-            <span class="quote-card__dash">—</span>
-          </blockquote>
-          <blockquote class="quote-card">
-            <p class="quote-card__text">“I fell in love with the way you touched me without using your hands.”</p>
-            <span class="quote-card__dash">—</span>
-          </blockquote>
-          <blockquote class="quote-card">
-            <p class="quote-card__text">“My heart is, and always will be, yours. In this life and every next one.”</p>
-            <span class="quote-card__dash">—</span>
-          </blockquote>
-          <blockquote class="quote-card">
-            <p class="quote-card__text">“If I had a flower for every time I thought of you, I could walk through my garden forever.”</p>
-            <span class="quote-card__dash">—</span>
-          </blockquote>
-        </div>
-        <div class="quotes-carousel__dots" id="quotes-dots"></div>
       </div>
     </section>
 
@@ -234,7 +388,7 @@ Gokul ❤️"
     <section class="section reveal" id="counter-section" data-delay="0.14s">
       <div class="counter-card">
         <p class="eyebrow">Our time</p>
-        <h2 class="section-title">We’ve been together for <span id="days-inline">0</span> days ❤️</h2>
+        <h2 class="section-title">We've been together for <span id="days-inline">0</span> days ❤️</h2>
         <div class="counter-card__heartbeat">
           <div class="counter-card__number" id="days-counter">000</div>
           <div class="counter-card__pulse" id="counter-pulse"></div>
@@ -284,10 +438,6 @@ Gokul ❤️"
       <p class="site-footer__line">Made with ❤️ by Gokul</p>
     </footer>
   </main>
-
-  <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top" hidden>
-    ↑
-  </button>
 
   <div class="modal" id="surprise-modal" hidden>
     <div class="modal__backdrop" data-close-surprise></div>

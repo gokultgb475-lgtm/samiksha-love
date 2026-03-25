@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#100612"/>
+      <stop offset="50%" stop-color="#2f0f2f"/>
+      <stop offset="100%" stop-color="#5a1d40"/>
+    </linearGradient>
+    <radialGradient id="home" cx="50%" cy="44%" r="34%">
+      <stop offset="0%" stop-color="#fff0ca" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#fff0ca" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+  <rect width="1200" height="1200" fill="url(#home)"/>
+  <rect x="0" y="818" width="1200" height="382" fill="#0b050f"/>
+  <path d="M295 816h610v-27L600 525 295 789z" fill="#ffb6d2" fill-opacity="0.9"/>
+  <rect x="362" y="816" width="474" height="198" rx="18" fill="#fff4f8" fill-opacity="0.1"/>
+  <rect x="544" y="860" width="112" height="154" rx="12" fill="#ff9fbe" fill-opacity="0.3"/>
+  <rect x="410" y="864" width="88" height="88" rx="12" fill="#fff4f8" fill-opacity="0.18"/>
+  <rect x="704" y="864" width="88" height="88" rx="12" fill="#fff4f8" fill-opacity="0.18"/>
+  <circle cx="600" cy="444" r="104" fill="#fff4cf"/>
+  <circle cx="600" cy="444" r="58" fill="#ff8a5f"/>
+  <text x="100" y="160" fill="#fff1f7" font-family="Georgia, serif" font-size="42" letter-spacing="10">HOME</text>
+  <text x="100" y="1042" fill="#fff1f7" font-family="Georgia, serif" font-size="84" font-style="italic">You still feel like home to me.</text>
+</svg>

@@ -11,6 +11,19 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body class="intro-active is-locked">
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+  <nav class="floating-nav" id="floating-nav" aria-label="Jump to section">
+    <a class="floating-nav__link" href="#home" data-tooltip="Home">🏠</a>
+    <a class="floating-nav__link" href="#build-up-section" data-tooltip="Story">📖</a>
+    <a class="floating-nav__link" href="#memory-video-section" data-tooltip="Memories">🎬</a>
+    <a class="floating-nav__link" href="#gallery-section" data-tooltip="Gallery">🖼️</a>
+    <a class="floating-nav__link" href="#letter-section" data-tooltip="Letter">💌</a>
+    <a class="floating-nav__link" href="#counter-section" data-tooltip="Timer">⏳</a>
+    <a class="floating-nav__link" href="#surprise-section" data-tooltip="Surprise">🎁</a>
+  </nav>
+
+  <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
   <div class="intro-screen" id="intro-screen">
     <div class="intro-screen__backdrop"></div>
     <div class="intro-screen__content">
@@ -27,6 +40,8 @@
   <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
+  <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
+
   <div class="ambient-shell" id="ambient-shell" aria-hidden="true">
     <div class="ambient-shell__orb ambient-shell__orb--one"></div>
     <div class="ambient-shell__orb ambient-shell__orb--two"></div>
@@ -42,7 +57,15 @@
   </audio>
 
   <button class="music-fab" id="music-toggle" type="button" aria-label="Play romantic music">
-    <span class="music-fab__icon" id="music-icon">♪</span>
+    <span class="music-fab__icon" id="music-icon">
+      <span class="music-bars" id="music-bars">
+        <span class="music-bars__bar"></span>
+        <span class="music-bars__bar"></span>
+        <span class="music-bars__bar"></span>
+        <span class="music-bars__bar"></span>
+      </span>
+      <span class="music-bars__note" id="music-note">♪</span>
+    </span>
     <span class="music-fab__copy">
       <strong>Nenjukkule</strong>
       <small id="music-status">waiting for your tap</small>
@@ -88,6 +111,39 @@
       </div>
     </section>
 
+    <section class="section reveal quotes-section" id="quotes-section" data-delay="0.08s">
+      <div class="section-copy">
+        <p class="eyebrow">Words from my heart</p>
+        <h2 class="section-title">Things I want you to always remember</h2>
+        <div class="section-divider"><span></span></div>
+      </div>
+      <div class="quotes-carousel" id="quotes-carousel">
+        <div class="quotes-carousel__track" id="quotes-track">
+          <blockquote class="quote-card is-active">
+            <p class="quote-card__text">“You are the reason I believe in magic, because how else could someone so perfect exist?”</p>
+            <span class="quote-card__dash">—</span>
+          </blockquote>
+          <blockquote class="quote-card">
+            <p class="quote-card__text">“Every love story is beautiful, but ours is my absolute favorite.”</p>
+            <span class="quote-card__dash">—</span>
+          </blockquote>
+          <blockquote class="quote-card">
+            <p class="quote-card__text">“I fell in love with the way you touched me without using your hands.”</p>
+            <span class="quote-card__dash">—</span>
+          </blockquote>
+          <blockquote class="quote-card">
+            <p class="quote-card__text">“My heart is, and always will be, yours. In this life and every next one.”</p>
+            <span class="quote-card__dash">—</span>
+          </blockquote>
+          <blockquote class="quote-card">
+            <p class="quote-card__text">“If I had a flower for every time I thought of you, I could walk through my garden forever.”</p>
+            <span class="quote-card__dash">—</span>
+          </blockquote>
+        </div>
+        <div class="quotes-carousel__dots" id="quotes-dots"></div>
+      </div>
+    </section>
+
     <section class="section reveal" id="memory-video-section" data-delay="0.08s">
       <div class="section-copy">
         <p class="eyebrow">Memories</p>
@@ -128,15 +184,19 @@
       <div class="gallery-grid">
         <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-1.svg" data-lightbox-caption="The first smile that stayed in my mind.">
           <img src="./assets/images/memory-1.svg" alt="Romantic memory artwork one" loading="lazy">
+          <span class="gallery-card__overlay">The first smile that stayed in my mind.</span>
         </button>
         <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-2.svg" data-lightbox-caption="Moonlit thoughts that always lead me back to you.">
           <img src="./assets/images/memory-2.svg" alt="Romantic memory artwork two" loading="lazy">
+          <span class="gallery-card__overlay">Moonlit thoughts that always lead me back to you.</span>
         </button>
         <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-3.svg" data-lightbox-caption="Soft moments that feel like forever.">
           <img src="./assets/images/memory-3.svg" alt="Romantic memory artwork three" loading="lazy">
+          <span class="gallery-card__overlay">Soft moments that feel like forever.</span>
         </button>
         <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-4.svg" data-lightbox-caption="The kind of love that feels like home.">
           <img src="./assets/images/memory-4.svg" alt="Romantic memory artwork four" loading="lazy">
+          <span class="gallery-card__overlay">The kind of love that feels like home.</span>
         </button>
       </div>
     </section>
@@ -175,10 +235,34 @@ Gokul ❤️"
       <div class="counter-card">
         <p class="eyebrow">Our time</p>
         <h2 class="section-title">We’ve been together for <span id="days-inline">0</span> days ❤️</h2>
-        <div class="counter-card__number" id="days-counter">000</div>
+        <div class="counter-card__heartbeat">
+          <div class="counter-card__number" id="days-counter">000</div>
+          <div class="counter-card__pulse" id="counter-pulse"></div>
+        </div>
         <p class="counter-card__note">
           Ever since February 14, 2024, your love has been turning ordinary days into something unforgettable.
         </p>
+        <div class="anniversary-countdown" id="anniversary-countdown">
+          <p class="eyebrow" style="margin-top:2rem">Next anniversary in</p>
+          <div class="anniversary-countdown__grid">
+            <div class="anniversary-countdown__unit">
+              <span class="anniversary-countdown__value" id="anni-days">0</span>
+              <span class="anniversary-countdown__label">Days</span>
+            </div>
+            <div class="anniversary-countdown__unit">
+              <span class="anniversary-countdown__value" id="anni-hours">0</span>
+              <span class="anniversary-countdown__label">Hours</span>
+            </div>
+            <div class="anniversary-countdown__unit">
+              <span class="anniversary-countdown__value" id="anni-mins">0</span>
+              <span class="anniversary-countdown__label">Minutes</span>
+            </div>
+            <div class="anniversary-countdown__unit">
+              <span class="anniversary-countdown__value" id="anni-secs">0</span>
+              <span class="anniversary-countdown__label">Seconds</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -201,8 +285,13 @@ Gokul ❤️"
     </footer>
   </main>
 
+  <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top" hidden>
+    ↑
+  </button>
+
   <div class="modal" id="surprise-modal" hidden>
     <div class="modal__backdrop" data-close-surprise></div>
+    <div class="modal__heart-rain" id="modal-heart-rain" aria-hidden="true"></div>
     <div class="modal__panel">
       <button class="modal__close" type="button" data-close-surprise aria-label="Close surprise">×</button>
       <p class="eyebrow">The ending I wanted you to see</p>

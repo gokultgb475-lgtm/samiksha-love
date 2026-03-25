@@ -2,6 +2,40 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 const mobileLike = window.matchMedia('(max-width: 820px)').matches;
 
+// Apple emoji image CDN
+const APPLE_EMOJI_BASE = 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64/';
+const APPLE_EMOJI_MAP = {
+  '\u2764\uFE0F': '2764-fe0f', '\u2764': '2764-fe0f',
+  '\u2665\uFE0F': '2665-fe0f', '\u2665': '2665-fe0f',
+  '\uD83D\uDC96': '1f496', '\uD83D\uDC95': '1f495',
+  '\uD83D\uDC97': '1f497', '\uD83D\uDC93': '1f493',
+  '\uD83D\uDC98': '1f498', '\uD83D\uDC9D': '1f49d',
+  '\uD83D\uDC9E': '1f49e', '\uD83D\uDC9B': '1f49b',
+  '\uD83D\uDC9C': '1f49c', '\uD83D\uDC9A': '1f49a',
+  '\uD83D\uDC99': '1f499', '\uD83E\uDE77': '1fa77',
+  '\uD83D\uDC8C': '1f48c',
+  '\u2728': '2728', '\u2B50': '2b50',
+  '\uD83C\uDFE0': '1f3e0', '\uD83D\uDCD6': '1f4d6',
+  '\uD83C\uDFAC': '1f3ac',
+  '\uD83D\uDDBC\uFE0F': '1f5bc-fe0f', '\uD83D\uDDBC': '1f5bc-fe0f',
+  '\u23F3': '23f3', '\uD83C\uDF81': '1f381',
+  '\uD83C\uDF89': '1f389', '\uD83C\uDF8A': '1f38a',
+  '\u266A': null, '\u2661': null, '\u2726': null
+};
+
+function emojiImg(code, size) {
+  const s = size || 20;
+  const img = document.createElement('img');
+  img.src = `${APPLE_EMOJI_BASE}${code}.png`;
+  img.className = 'emoji';
+  img.draggable = false;
+  img.style.width = `${s}px`;
+  img.style.height = `${s}px`;
+  img.style.display = 'inline-block';
+  img.style.verticalAlign = 'middle';
+  return img;
+}
+
 const root = document.documentElement;
 const body = document.body;
 const introScreen = document.getElementById('intro-screen');
@@ -30,6 +64,10 @@ const surpriseModal = document.getElementById('surprise-modal');
 const lightbox = document.getElementById('lightbox');
 const lightboxImage = document.getElementById('lightbox-image');
 const lightboxCaption = document.getElementById('lightbox-caption');
+const scrollProgress = document.getElementById('scroll-progress');
+const floatingNav = document.getElementById('floating-nav');
+const confettiCanvas = document.getElementById('confetti-canvas');
+const confettiCtx = confettiCanvas ? confettiCanvas.getContext('2d') : null;
 
 let experienceStarted = false;
 let videoLoaded = false;
@@ -116,14 +154,14 @@ function typeText(element, text, options = {}) {
 
 function createHeartParticles() {
   const total = mobileLike ? 12 : 20;
-  const icons = ['❤', '♥', '♡'];
+  const heartCodes = ['2764-fe0f', '1f496', '1f495'];
 
   for (let index = 0; index < total; index += 1) {
     const heart = document.createElement('span');
     heart.className = 'heart-particle';
-    heart.textContent = icons[index % icons.length];
+    const sz = Math.round(14 + Math.random() * 18);
+    heart.appendChild(emojiImg(heartCodes[index % heartCodes.length], sz));
     heart.style.left = `${Math.random() * 100}%`;
-    heart.style.fontSize = `${0.7 + Math.random() * 1.15}rem`;
     heart.style.setProperty('--scale', (0.75 + Math.random() * 1.25).toFixed(2));
     heart.style.setProperty('--opacity', (0.2 + Math.random() * 0.5).toFixed(2));
     heart.style.setProperty('--drift-x', `${-70 + Math.random() * 140}px`);
@@ -174,9 +212,9 @@ function startExperience() {
 }
 
 function updateMusicUI(isPlaying) {
-  musicIcon.textContent = isPlaying ? '❚❚' : '♪';
-  musicStatus.textContent = isPlaying ? 'now playing' : (experienceStarted ? 'paused' : 'waiting for your tap');
+  body.classList.toggle('music-playing', isPlaying);
   musicToggle.setAttribute('aria-label', isPlaying ? 'Pause romantic music' : 'Play romantic music');
+  musicStatus.textContent = isPlaying ? 'now playing' : (experienceStarted ? 'paused' : 'waiting for your tap');
 }
 
 async function playMusic() {
@@ -288,12 +326,12 @@ function closeSurprise() {
 
 function createHeartExplosion(originX, originY) {
   const total = mobileLike ? 22 : 36;
-  const icons = ['❤', '♥', '♡', '💖'];
+  const heartCodes = ['2764-fe0f', '1f496', '1f495', '1f497'];
 
   for (let index = 0; index < total; index += 1) {
     const heart = document.createElement('span');
     heart.className = 'explosion-heart';
-    heart.textContent = icons[index % icons.length];
+    heart.appendChild(emojiImg(heartCodes[index % heartCodes.length], 20));
     heart.style.left = `${originX}px`;
     heart.style.top = `${originY}px`;
     heart.style.setProperty('--explode-x', `${-120 + Math.random() * 240}px`);
@@ -319,14 +357,44 @@ function closeLightbox() {
 function updateScrollParallax() {
   const shift = Math.min(window.scrollY * -0.035, 0);
   root.style.setProperty('--scroll-shift', `${shift.toFixed(2)}px`);
+
+  // Scroll progress bar
+  if (scrollProgress) {
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
+    scrollProgress.style.width = `${progress}%`;
+  }
+
+  // Back to top button visibility
+  if (backToTop) {
+    if (window.scrollY > window.innerHeight) {
+      backToTop.hidden = false;
+    } else {
+      backToTop.hidden = true;
+    }
+  }
+
+  // Floating nav active state
+  if (floatingNav) {
+    const sections = ['home', 'build-up-section', 'memory-video-section', 'gallery-section', 'letter-section', 'counter-section', 'surprise-section'];
+    let activeId = sections[0];
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.4) {
+        activeId = id;
+      }
+    }
+    floatingNav.querySelectorAll('.floating-nav__link').forEach(link => {
+      link.classList.toggle('is-active', link.getAttribute('href') === `#${activeId}`);
+    });
+  }
 }
 
 function animateCursor() {
-  currentCursorX += (targetCursorX - currentCursorX) * 0.16;
-  currentCursorY += (targetCursorY - currentCursorY) * 0.16;
+  currentCursorX += (targetCursorX - currentCursorX) * 0.18;
+  currentCursorY += (targetCursorY - currentCursorY) * 0.18;
 
-  cursorGlow.style.transform = `translate(${currentCursorX - 38}px, ${currentCursorY - 38}px)`;
-  cursorRing.style.transform = `translate(${currentCursorX - 19}px, ${currentCursorY - 19}px)`;
+  cursorGlow.style.transform = `translate(${currentCursorX - 11}px, ${currentCursorY - 11}px)`;
 
   if (Math.abs(targetCursorX - currentCursorX) > 0.2 || Math.abs(targetCursorY - currentCursorY) > 0.2) {
     requestAnimationFrame(animateCursor);
@@ -335,16 +403,62 @@ function animateCursor() {
   }
 }
 
+let trailCounter = 0;
+
+function createTrailHeart(x, y) {
+  const heart = document.createElement('span');
+  heart.className = 'cursor-trail-heart';
+  const heartCodes = ['2764-fe0f', '1f495', '1f496'];
+  heart.appendChild(emojiImg(heartCodes[Math.floor(Math.random() * heartCodes.length)], 14));
+  heart.style.left = `${x - 7 + (Math.random() * 14 - 7)}px`;
+  heart.style.top = `${y - 7 + (Math.random() * 14 - 7)}px`;
+  document.body.appendChild(heart);
+  window.setTimeout(() => heart.remove(), 800);
+}
+
+function createClickRipple(x, y) {
+  const ripple = document.createElement('span');
+  ripple.className = 'click-ripple';
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+  document.body.appendChild(ripple);
+  window.setTimeout(() => ripple.remove(), 700);
+
+  // Also spawn some mini hearts on click
+  const clickHeartCodes = ['2764-fe0f', '1f496', '1f495', '1f497'];
+  for (let i = 0; i < 6; i++) {
+    const heart = document.createElement('span');
+    heart.className = 'explosion-heart';
+    heart.appendChild(emojiImg(clickHeartCodes[i % clickHeartCodes.length], 18));
+    heart.style.left = `${x}px`;
+    heart.style.top = `${y}px`;
+    heart.style.setProperty('--explode-x', `${-60 + Math.random() * 120}px`);
+    heart.style.setProperty('--explode-y', `${-80 + Math.random() * 60}px`);
+    document.body.appendChild(heart);
+    window.setTimeout(() => heart.remove(), 1200);
+  }
+}
+
 function setupCursorGlow() {
   if (!finePointer || prefersReducedMotion) {
     return;
   }
 
+  // Set the cursor element to an Apple-style heart emoji image
+  cursorGlow.innerHTML = '';
+  cursorGlow.appendChild(emojiImg('2764-fe0f', 24));
+  cursorGlow.style.pointerEvents = 'none';
+
   document.addEventListener('mousemove', event => {
     targetCursorX = event.clientX;
     targetCursorY = event.clientY;
     cursorGlow.style.opacity = '1';
-    cursorRing.style.opacity = '1';
+
+    // Leave a trail every few moves
+    trailCounter++;
+    if (trailCounter % 4 === 0) {
+      createTrailHeart(event.clientX, event.clientY);
+    }
 
     const offsetX = ((event.clientX / window.innerWidth) - 0.5) * 18;
     const offsetY = ((event.clientY / window.innerHeight) - 0.5) * 14;
@@ -359,7 +473,11 @@ function setupCursorGlow() {
 
   document.addEventListener('mouseleave', () => {
     cursorGlow.style.opacity = '0';
-    cursorRing.style.opacity = '0';
+  });
+
+  // Click ripple effect
+  document.addEventListener('click', event => {
+    createClickRipple(event.clientX, event.clientY);
   });
 }
 
@@ -449,6 +567,7 @@ video.addEventListener('ended', async () => {
 surpriseButton.addEventListener('click', event => {
   const rect = event.currentTarget.getBoundingClientRect();
   createHeartExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  launchConfetti();
   revealSurprise();
 });
 
@@ -498,6 +617,126 @@ videoLoadObserver.observe(videoSection);
 window.addEventListener('scroll', updateScrollParallax, { passive: true });
 window.addEventListener('resize', updateScrollParallax, { passive: true });
 
+// Confetti effect
+function launchConfetti() {
+  if (!confettiCanvas || !confettiCtx) return;
+
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+
+  const particles = [];
+  const colors = ['#d6b896', '#a84858', '#f8f0ed', '#dea7a7', '#967d8d', '#ffd79a', '#ff8fb6'];
+
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+      y: window.innerHeight / 2,
+      vx: (Math.random() - 0.5) * 16,
+      vy: -8 - Math.random() * 12,
+      size: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 12,
+      gravity: 0.18 + Math.random() * 0.08,
+      opacity: 1,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    });
+  }
+
+  let frameCount = 0;
+  function drawConfetti() {
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    let alive = false;
+
+    for (const p of particles) {
+      p.x += p.vx;
+      p.vy += p.gravity;
+      p.y += p.vy;
+      p.rotation += p.rotationSpeed;
+      p.opacity -= 0.006;
+      p.vx *= 0.99;
+
+      if (p.opacity <= 0) continue;
+      alive = true;
+
+      confettiCtx.save();
+      confettiCtx.translate(p.x, p.y);
+      confettiCtx.rotate((p.rotation * Math.PI) / 180);
+      confettiCtx.globalAlpha = Math.max(0, p.opacity);
+      confettiCtx.fillStyle = p.color;
+
+      if (p.shape === 'rect') {
+        confettiCtx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      } else {
+        confettiCtx.beginPath();
+        confettiCtx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+        confettiCtx.fill();
+      }
+      confettiCtx.restore();
+    }
+
+    frameCount++;
+    if (alive && frameCount < 300) {
+      requestAnimationFrame(drawConfetti);
+    } else {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+  }
+
+  requestAnimationFrame(drawConfetti);
+}
+
+// Back to top button
+const backToTop = document.getElementById('back-to-top');
+if (backToTop) {
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// Parse all emojis in the DOM and replace with Apple/iOS emoji images
+function parseAppleEmojis(rootEl) {
+  const target = rootEl || document.body;
+  const emojiKeys = Object.keys(APPLE_EMOJI_MAP).filter(k => APPLE_EMOJI_MAP[k] !== null);
+  // Sort longest first so multi-codepoint emojis match before single ones
+  emojiKeys.sort((a, b) => b.length - a.length);
+  const emojiRegex = new RegExp(emojiKeys.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
+
+  function walkNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if (!emojiRegex.test(text)) return;
+      emojiRegex.lastIndex = 0;
+
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      let match;
+      while ((match = emojiRegex.exec(text)) !== null) {
+        if (match.index > last) {
+          frag.appendChild(document.createTextNode(text.slice(last, match.index)));
+        }
+        const code = APPLE_EMOJI_MAP[match[0]];
+        if (code) {
+          frag.appendChild(emojiImg(code, 20));
+        } else {
+          frag.appendChild(document.createTextNode(match[0]));
+        }
+        last = match.index + match[0].length;
+      }
+      if (last < text.length) {
+        frag.appendChild(document.createTextNode(text.slice(last)));
+      }
+      node.parentNode.replaceChild(frag, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const tag = node.tagName.toLowerCase();
+      if (['script', 'style', 'textarea', 'select', 'img', 'canvas', 'video', 'audio', 'source'].includes(tag)) return;
+      Array.from(node.childNodes).forEach(walkNode);
+    }
+  }
+
+  walkNode(target);
+}
+
 window.addEventListener('load', () => {
   createHeartParticles();
   setupCursorGlow();
@@ -505,6 +744,7 @@ window.addEventListener('load', () => {
   updateVideoUI();
   updateScrollParallax();
   startIntroSequence();
+  parseAppleEmojis();
   window.setInterval(() => {
     if (counterAnimated) {
       refreshCounterInstant();

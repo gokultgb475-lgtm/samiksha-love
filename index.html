@@ -13,6 +13,11 @@
 <body class="book-phase is-locked">
   <!-- Ambient background -->
   <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
+  <div class="aurora-backdrop" id="aurora-backdrop" aria-hidden="true">
+    <div class="aurora-wave aurora-wave--1"></div>
+    <div class="aurora-wave aurora-wave--2"></div>
+    <div class="aurora-wave aurora-wave--3"></div>
+  </div>
   <div class="ambient-shell" id="ambient-shell" aria-hidden="true">
     <div class="ambient-shell__orb ambient-shell__orb--one"></div>
     <div class="ambient-shell__orb ambient-shell__orb--two"></div>
@@ -259,10 +264,40 @@
     </span>
   </button>
 
+  <!-- Love Meter (scroll progress heart) -->
+  <div class="love-meter" id="love-meter" aria-hidden="true">
+    <div class="love-meter__track">
+      <div class="love-meter__fill" id="love-meter-fill"></div>
+      <div class="love-meter__glow" id="love-meter-glow"></div>
+    </div>
+    <div class="love-meter__icon">💖</div>
+    <span class="love-meter__label" id="love-meter-label">0%</span>
+  </div>
+
+  <!-- Scroll-triggered particle canvas -->
+  <canvas class="scroll-particle-canvas" id="scroll-particle-canvas" aria-hidden="true"></canvas>
+
   <main class="main-stage" id="main-stage">
     <section class="hero section" id="home">
-      <div class="hero__halo"></div>
+      <div class="hero__halo">
+        <!-- Orbital rings -->
+        <div class="hero__orbital hero__orbital--1"></div>
+        <div class="hero__orbital hero__orbital--2"></div>
+        <div class="hero__orbital hero__orbital--3"></div>
+      </div>
       <div class="hero__content reveal reveal--visible">
+        <div class="infinity-love" aria-hidden="true">
+          <svg class="infinity-svg" viewBox="0 0 200 80" fill="none">
+            <path class="infinity-path" d="M100 40 C100 20, 130 0, 160 20 C190 40, 190 60, 160 60 C130 60, 100 60, 100 40 C100 20, 70 0, 40 20 C10 40, 10 60, 40 60 C70 60, 100 60, 100 40Z" stroke="url(#infinityGrad)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <defs>
+              <linearGradient id="infinityGrad" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#d6b896"/>
+                <stop offset="50%" stop-color="#a84858"/>
+                <stop offset="100%" stop-color="#d6b896"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <p class="eyebrow">A digital love story</p>
         <h1 class="hero__title glow-text">Every chapter in my heart still leads back to you.</h1>
         <p class="hero__lead">
@@ -273,7 +308,25 @@
         </button>
         <p class="hero__hint">Music begins with your touch. After that, the whole story wakes up.</p>
       </div>
+      <!-- Scroll down indicator -->
+      <div class="scroll-indicator" id="scroll-indicator">
+        <div class="scroll-indicator__mouse">
+          <div class="scroll-indicator__wheel"></div>
+        </div>
+        <span class="scroll-indicator__text">Scroll to explore</span>
+        <div class="scroll-indicator__chevrons">
+          <span class="scroll-indicator__chevron"></span>
+          <span class="scroll-indicator__chevron"></span>
+        </div>
+      </div>
     </section>
+
+    <!-- Love Quotes Ticker -->
+    <div class="love-quotes-ticker" id="love-quotes-ticker" aria-hidden="true">
+      <div class="love-quotes-ticker__track" id="ticker-track">
+        <!-- Populated by JS -->
+      </div>
+    </div>
 
     <section class="section reveal" id="build-up-section" data-delay="0.06s">
       <div class="section-copy">
@@ -297,6 +350,13 @@
         </article>
       </div>
     </section>
+
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">✦</span>
+      <div class="glow-separator__line"></div>
+    </div>
 
     <section class="section reveal" id="memory-video-section" data-delay="0.08s">
       <div class="section-copy">
@@ -328,6 +388,13 @@
       </div>
     </section>
 
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">❦</span>
+      <div class="glow-separator__line"></div>
+    </div>
+
     <section class="section reveal" id="gallery-section" data-delay="0.1s">
       <div class="section-copy">
         <p class="eyebrow">Photo gallery</p>
@@ -354,6 +421,13 @@
         </button>
       </div>
     </section>
+
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">◆</span>
+      <div class="glow-separator__line"></div>
+    </div>
 
     <section class="section reveal" id="letter-section" data-delay="0.12s">
       <div class="section-copy">
@@ -384,6 +458,13 @@ Gokul ❤️"
         ></div>
       </article>
     </section>
+
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">✦</span>
+      <div class="glow-separator__line"></div>
+    </div>
 
     <section class="section reveal" id="counter-section" data-delay="0.14s">
       <div class="counter-card">
@@ -420,6 +501,13 @@ Gokul ❤️"
       </div>
     </section>
 
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">❦</span>
+      <div class="glow-separator__line"></div>
+    </div>
+
     <section class="section reveal" id="surprise-section" data-delay="0.16s">
       <div class="finale-card">
         <p class="eyebrow">Interactive ending</p>
@@ -427,6 +515,21 @@ Gokul ❤️"
         <p class="section-subtitle">
           Press this when you want the ending to glow a little brighter.
         </p>
+        <!-- Heartbeat SVG line -->
+        <div class="heartbeat-line" aria-hidden="true">
+          <svg viewBox="0 0 600 60" preserveAspectRatio="none" class="heartbeat-svg">
+            <path class="heartbeat-path" d="M0,30 L120,30 L140,10 L160,50 L180,5 L200,55 L220,30 L340,30 L360,10 L380,50 L400,5 L420,55 L440,30 L600,30" fill="none" stroke="url(#hbGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="hbGrad" x1="0" y1="0" x2="600" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="transparent"/>
+                <stop offset="20%" stop-color="#a84858"/>
+                <stop offset="50%" stop-color="#d6b896"/>
+                <stop offset="80%" stop-color="#a84858"/>
+                <stop offset="100%" stop-color="transparent"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <button class="button button--primary finale-card__button" id="surprise-button" type="button">
           Click for a Surprise 💖
         </button>
@@ -436,20 +539,34 @@ Gokul ❤️"
 
     <footer class="site-footer reveal" id="footer-section" data-delay="0.18s">
       <p class="site-footer__line">Made with ❤️ by Gokul</p>
+      <div class="site-footer__hearts">
+        <span class="footer-heart">💕</span>
+        <span class="footer-heart">❤️</span>
+        <span class="footer-heart">💖</span>
+        <span class="footer-heart">❤️</span>
+        <span class="footer-heart">💕</span>
+      </div>
+      <p class="site-footer__tagline">Written in code, felt in heart</p>
     </footer>
   </main>
 
   <div class="modal" id="surprise-modal" hidden>
     <div class="modal__backdrop" data-close-surprise></div>
     <div class="modal__heart-rain" id="modal-heart-rain" aria-hidden="true"></div>
-    <div class="modal__panel">
+    <div class="modal__panel modal__panel--surprise">
       <button class="modal__close" type="button" data-close-surprise aria-label="Close surprise">×</button>
+      <div class="modal__glow-orb" aria-hidden="true"></div>
       <p class="eyebrow">The ending I wanted you to see</p>
       <h3>I Love You So Much Samiksha ❤️</h3>
       <p>
         Every line here, every glow, every beat of this page was made to carry one simple truth:
         you matter to me more than words ever fully can.
       </p>
+      <div class="modal__pulse-rings" aria-hidden="true">
+        <span class="modal__ring"></span>
+        <span class="modal__ring"></span>
+        <span class="modal__ring"></span>
+      </div>
     </div>
   </div>
 

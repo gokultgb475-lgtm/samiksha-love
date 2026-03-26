@@ -68,6 +68,15 @@ const scrollProgress = document.getElementById('scroll-progress');
 const floatingNav = document.getElementById('floating-nav');
 const confettiCanvas = document.getElementById('confetti-canvas');
 const confettiCtx = confettiCanvas ? confettiCanvas.getContext('2d') : null;
+const starfieldCanvas = document.getElementById('starfield');
+const starfieldCtx = starfieldCanvas ? starfieldCanvas.getContext('2d') : null;
+const tickerTrack = document.getElementById('ticker-track');
+const modalHeartRain = document.getElementById('modal-heart-rain');
+const loveMeterFill = document.getElementById('love-meter-fill');
+const loveMeterGlow = document.getElementById('love-meter-glow');
+const loveMeterLabel = document.getElementById('love-meter-label');
+const scrollParticleCanvas = document.getElementById('scroll-particle-canvas');
+const scrollParticleCtx = scrollParticleCanvas ? scrollParticleCanvas.getContext('2d') : null;
 
 /* ── State ── */
 let bookOpened = false;
@@ -424,6 +433,346 @@ function parseAppleEmojis(rootEl) {
   walk(target);
 }
 
+/* ═══════════════════════════════════════════════════
+   STARFIELD CANVAS
+   ═══════════════════════════════════════════════════ */
+function initStarfield() {
+  if (!starfieldCanvas || !starfieldCtx || prefersReducedMotion) return;
+  const ctx = starfieldCtx;
+  let stars = [];
+  function resize() {
+    starfieldCanvas.width = window.innerWidth;
+    starfieldCanvas.height = window.innerHeight;
+    createStars();
+  }
+  function createStars() {
+    const count = mobileLike ? 80 : 160;
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * starfieldCanvas.width,
+        y: Math.random() * starfieldCanvas.height,
+        radius: Math.random() * 1.5 + 0.3,
+        alpha: Math.random() * 0.8 + 0.1,
+        twinkleSpeed: Math.random() * 0.02 + 0.005,
+        twinklePhase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+  function draw(time) {
+    ctx.clearRect(0, 0, starfieldCanvas.width, starfieldCanvas.height);
+    for (const s of stars) {
+      const flicker = Math.sin(time * s.twinkleSpeed + s.twinklePhase) * 0.4 + 0.6;
+      ctx.globalAlpha = s.alpha * flicker;
+      ctx.fillStyle = '#f8f0ed';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fill();
+      // Glow
+      if (s.radius > 1) {
+        ctx.globalAlpha = s.alpha * flicker * 0.15;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  requestAnimationFrame(draw);
+}
+
+/* ═══════════════════════════════════════════════════
+   LOVE QUOTES TICKER
+   ═══════════════════════════════════════════════════ */
+function initLoveQuotesTicker() {
+  if (!tickerTrack) return;
+  const quotes = [
+    '"You are my today and all of my tomorrows."',
+    '"In your eyes, I found my home."',
+    '"Every love story is beautiful, but ours is my favorite."',
+    '"I fell in love with the way you touched me without using your hands."',
+    '"You are the finest, loveliest, tenderest person I have ever known."',
+    '"I look at you and see the rest of my life in front of my eyes."',
+    '"My heart is, and always will be, yours."',
+    '"You make my heart smile."',
+    '"To be your friend was all I ever wanted; to be your lover was all I ever dreamed."',
+    '"I knew I loved you before I met you."'
+  ];
+  // Duplicate for seamless scroll
+  const allQuotes = [...quotes, ...quotes];
+  tickerTrack.innerHTML = allQuotes.map(q =>
+    `<span class="love-quotes-ticker__item">${q}<span class="ticker-heart">♥</span></span>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   MAGNETIC TILT EFFECT ON CARDS
+   ═══════════════════════════════════════════════════ */
+function initMagneticTilt() {
+  if (!finePointer || prefersReducedMotion) return;
+  const tiltCards = document.querySelectorAll('.story-panel, .letter-card, .counter-card, .finale-card, .hero__content');
+  tiltCards.forEach(card => {
+    // Add shine layer
+    const shine = document.createElement('div');
+    shine.className = 'tilt-shine';
+    card.style.position = 'relative';
+    card.appendChild(shine);
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -3;
+      const rotateY = ((x - centerX) / centerX) * 3;
+      card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.02)`;
+      shine.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+      shine.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+      shine.style.opacity = '1';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      shine.style.opacity = '0';
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   HEART RAIN IN SURPRISE MODAL
+   ═══════════════════════════════════════════════════ */
+function createModalHeartRain() {
+  if (!modalHeartRain) return;
+  modalHeartRain.innerHTML = '';
+  const hearts = ['❤️', '💕', '💖', '💗'];
+  const count = mobileLike ? 15 : 30;
+  for (let i = 0; i < count; i++) {
+    const h = document.createElement('span');
+    h.className = 'rain-heart';
+    h.textContent = hearts[i % hearts.length];
+    h.style.left = `${Math.random() * 100}%`;
+    h.style.fontSize = `${0.8 + Math.random() * 1.2}rem`;
+    h.style.animationDuration = `${3 + Math.random() * 4}s`;
+    h.style.animationDelay = `${Math.random() * 2}s`;
+    modalHeartRain.appendChild(h);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   STAGGER REVEAL OBSERVER
+   ═══════════════════════════════════════════════════ */
+function initStaggerObserver() {
+  const staggerContainers = document.querySelectorAll('.story-grid, .gallery-grid, .anniversary-countdown__grid');
+  staggerContainers.forEach(container => {
+    container.classList.add('stagger-children');
+    Array.from(container.children).forEach(child => child.classList.add('stagger-item'));
+  });
+  const staggerObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        staggerObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.stagger-children').forEach(c => staggerObs.observe(c));
+}
+
+/* ═══════════════════════════════════════════════════
+   BUTTON RIPPLE EFFECT
+   ═══════════════════════════════════════════════════ */
+function initButtonRipple() {
+  document.querySelectorAll('.button, .book-enter-btn, .book-nav__btn').forEach(btn => {
+    btn.style.position = 'relative';
+    btn.style.overflow = 'hidden';
+    btn.addEventListener('click', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'button-ripple';
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+      ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   LOVE METER (scroll progress heart)
+   ═══════════════════════════════════════════════════ */
+function updateLoveMeter() {
+  if (!loveMeterFill || !loveMeterGlow) return;
+  const sh = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = sh > 0 ? Math.min(100, Math.round((window.scrollY / sh) * 100)) : 0;
+  loveMeterFill.style.height = `${pct}%`;
+  loveMeterGlow.style.height = `${pct}%`;
+  if (loveMeterLabel) loveMeterLabel.textContent = `${pct}%`;
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLL-TRIGGERED PARTICLE BURSTS
+   ═══════════════════════════════════════════════════ */
+let scrollParticles = [];
+let scrollParticleRAF = null;
+
+function initScrollParticles() {
+  if (!scrollParticleCanvas || !scrollParticleCtx || prefersReducedMotion) return;
+  function resize() {
+    scrollParticleCanvas.width = window.innerWidth;
+    scrollParticleCanvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    scrollParticleCtx.clearRect(0, 0, scrollParticleCanvas.width, scrollParticleCanvas.height);
+    for (let i = scrollParticles.length - 1; i >= 0; i--) {
+      const p = scrollParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.02; // gravity
+      p.life -= 0.012;
+      p.vx *= 0.99;
+      if (p.life <= 0) { scrollParticles.splice(i, 1); continue; }
+      scrollParticleCtx.globalAlpha = p.life;
+      scrollParticleCtx.fillStyle = p.color;
+      scrollParticleCtx.beginPath();
+      scrollParticleCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      scrollParticleCtx.fill();
+      // glow
+      scrollParticleCtx.globalAlpha = p.life * 0.2;
+      scrollParticleCtx.beginPath();
+      scrollParticleCtx.arc(p.x, p.y, p.size * p.life * 3, 0, Math.PI * 2);
+      scrollParticleCtx.fill();
+    }
+    scrollParticleCtx.globalAlpha = 1;
+    if (scrollParticles.length > 0) {
+      scrollParticleRAF = requestAnimationFrame(draw);
+    } else {
+      scrollParticleRAF = null;
+    }
+  }
+
+  // Burst particles at section reveal
+  const sectionIds = ['build-up-section', 'memory-video-section', 'gallery-section', 'letter-section', 'counter-section', 'surprise-section'];
+  const burstTriggered = new Set();
+  const burstObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !burstTriggered.has(entry.target.id)) {
+        burstTriggered.add(entry.target.id);
+        const rect = entry.target.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + 80;
+        const colors = ['#d6b896', '#a84858', '#dea7a7', '#f8f0ed', '#967d8d'];
+        for (let i = 0; i < 30; i++) {
+          scrollParticles.push({
+            x: cx + (Math.random() - 0.5) * 200,
+            y: cy + (Math.random() - 0.5) * 40,
+            vx: (Math.random() - 0.5) * 4,
+            vy: -Math.random() * 3 - 1,
+            size: 2 + Math.random() * 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 1
+          });
+        }
+        if (!scrollParticleRAF) scrollParticleRAF = requestAnimationFrame(draw);
+      }
+    });
+  }, { threshold: 0.2 });
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) burstObs.observe(el);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   SECTION EMOJI RAIN
+   ═══════════════════════════════════════════════════ */
+function initSectionEmojiRain() {
+  if (prefersReducedMotion) return;
+  const sectionEmojis = {
+    'build-up-section': ['✨', '⭐', '💫'],
+    'memory-video-section': ['🎬', '🌟', '✨'],
+    'gallery-section': ['🖼️', '🌸', '🌺'],
+    'letter-section': ['💌', '❤️', '💕'],
+    'counter-section': ['⏳', '💖', '💓'],
+    'surprise-section': ['🎁', '🎉', '🎊']
+  };
+  const count = mobileLike ? 6 : 12;
+  Object.entries(sectionEmojis).forEach(([sectionId, emojis]) => {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const rain = document.createElement('div');
+    rain.className = 'section-emoji-rain';
+    for (let i = 0; i < count; i++) {
+      const drop = document.createElement('span');
+      drop.className = 'emoji-drop';
+      drop.textContent = emojis[i % emojis.length];
+      drop.style.left = `${5 + Math.random() * 90}%`;
+      drop.style.top = `${Math.random() * -10}%`;
+      drop.style.fontSize = `${0.6 + Math.random() * 0.8}rem`;
+      drop.style.animationDuration = `${6 + Math.random() * 6}s`;
+      drop.style.animationDelay = `${Math.random() * 5}s`;
+      rain.appendChild(drop);
+    }
+    section.style.position = 'relative';
+    section.insertBefore(rain, section.firstChild);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   LIVE ANNIVERSARY COUNTDOWN
+   ═══════════════════════════════════════════════════ */
+function startAnniversaryCountdown() {
+  const anniDays = document.getElementById('anni-days');
+  const anniHours = document.getElementById('anni-hours');
+  const anniMins = document.getElementById('anni-mins');
+  const anniSecs = document.getElementById('anni-secs');
+  if (!anniDays) return;
+
+  function getNextAnniversary() {
+    const now = new Date();
+    let year = now.getFullYear();
+    let anni = new Date(year, 1, 14); // Feb 14
+    if (now >= anni) anni = new Date(year + 1, 1, 14);
+    return anni;
+  }
+
+  function update() {
+    const now = new Date();
+    const target = getNextAnniversary();
+    const diff = target - now;
+    if (diff <= 0) return;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    if (anniDays) anniDays.textContent = d;
+    if (anniHours) anniHours.textContent = String(h).padStart(2, '0');
+    if (anniMins) anniMins.textContent = String(m).padStart(2, '0');
+    if (anniSecs) anniSecs.textContent = String(s).padStart(2, '0');
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+/* ═══════════════════════════════════════════════════
+   SMOOTH SCROLL HIDE for scroll indicator
+   ═══════════════════════════════════════════════════ */
+function updateScrollIndicator() {
+  const indicator = document.getElementById('scroll-indicator');
+  if (!indicator) return;
+  if (window.scrollY > 100) {
+    indicator.style.opacity = '0';
+    indicator.style.pointerEvents = 'none';
+  }
+}
+
 /* ── Wire up events ── */
 if (beginButton) beginButton.addEventListener('click', async () => { await playMusic(); });
 if (musicToggle) musicToggle.addEventListener('click', async () => { bgMusic.paused ? await playMusic() : pauseMusic(); });
@@ -435,7 +784,7 @@ if (video) {
   video.addEventListener('pause', async () => { updateVideoUI(); if(musicWasPlayingBeforeVideo&&experienceStarted){musicWasPlayingBeforeVideo=false;await playMusic();} });
   video.addEventListener('ended', async () => { updateVideoUI(); if(musicWasPlayingBeforeVideo&&experienceStarted){musicWasPlayingBeforeVideo=false;await playMusic();} });
 }
-if (surpriseButton) surpriseButton.addEventListener('click', e => { const r=e.currentTarget.getBoundingClientRect(); createHeartExplosion(r.left+r.width/2,r.top+r.height/2); launchConfetti(); revealSurprise(); });
+if (surpriseButton) surpriseButton.addEventListener('click', e => { const r=e.currentTarget.getBoundingClientRect(); createHeartExplosion(r.left+r.width/2,r.top+r.height/2); launchConfetti(); createModalHeartRain(); revealSurprise(); });
 document.querySelectorAll('[data-close-surprise]').forEach(n => n.addEventListener('click', closeSurprise));
 document.querySelectorAll('.gallery-card').forEach(c => c.addEventListener('click', () => openLightbox(c.dataset.lightboxSrc, c.dataset.lightboxCaption)));
 document.querySelectorAll('[data-close-lightbox]').forEach(n => n.addEventListener('click', closeLightbox));
@@ -450,10 +799,13 @@ if (video) {
   if (vs) vlo.observe(vs);
 }
 
-window.addEventListener('scroll', updateScrollParallax, { passive: true });
+window.addEventListener('scroll', () => {
+  updateScrollParallax();
+  updateLoveMeter();
+  updateScrollIndicator();
+}, { passive: true });
 window.addEventListener('resize', updateScrollParallax, { passive: true });
 
-/* ── Init ── */
 window.addEventListener('load', () => {
   createHeartParticles();
   setupCursorGlow();
@@ -462,5 +814,13 @@ window.addEventListener('load', () => {
   updateScrollParallax();
   updateNavButtons();
   parseAppleEmojis();
+  initStarfield();
+  initLoveQuotesTicker();
+  initMagneticTilt();
+  initStaggerObserver();
+  initButtonRipple();
+  initScrollParticles();
+  initSectionEmojiRain();
+  startAnniversaryCountdown();
   setInterval(() => { if(counterAnimated) refreshCounterInstant(); }, 60000);
 });

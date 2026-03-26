@@ -11,6 +11,25 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body class="book-phase is-locked">
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ✦  CINEMATIC INTRO OVERLAY                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="intro-overlay" id="intro-overlay">
+    <div class="intro-overlay__vignette"></div>
+    <div class="intro-overlay__content">
+      <div class="intro-overlay__sparkle-ring">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <p class="intro-overlay__line intro-overlay__line--1" id="intro-line-1">A story written in light...</p>
+      <p class="intro-overlay__line intro-overlay__line--2" id="intro-line-2">crafted with love...</p>
+      <p class="intro-overlay__line intro-overlay__line--3" id="intro-line-3">made only for you, Samiksha ❤️</p>
+      <div class="intro-overlay__divider">
+        <span></span><span class="intro-diamond">◆</span><span></span>
+      </div>
+      <button class="intro-overlay__skip" id="intro-skip" type="button">Skip Intro</button>
+    </div>
+  </div>
+
   <!-- Ambient background -->
   <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
   <div class="aurora-backdrop" id="aurora-backdrop" aria-hidden="true">
@@ -36,15 +55,17 @@
   <!-- ✦  THE BOOK EXPERIENCE                    -->
   <!-- ═══════════════════════════════════════════ -->
   <div class="book-scene" id="book-scene">
-    <!-- Prompt text -->
-    <div class="book-prompt" id="book-prompt">
-      <p class="book-prompt__eyebrow">A love story written in light</p>
-      <p class="book-prompt__cta" id="book-cta">
-        <span class="key-hint">Press any key</span>
-        <span class="tap-hint">Tap</span>
-        to open the book
-      </p>
-      <div class="book-prompt__glow"></div>
+    <!-- Reading progress bar -->
+    <div class="book-reading-progress" id="book-reading-progress">
+      <div class="book-reading-progress__fill" id="book-reading-fill"></div>
+      <div class="book-reading-progress__glow"></div>
+    </div>
+
+    <!-- Ambient light orbs -->
+    <div class="book-ambient-orbs" aria-hidden="true">
+      <div class="book-orb book-orb--1"></div>
+      <div class="book-orb book-orb--2"></div>
+      <div class="book-orb book-orb--3"></div>
     </div>
 
     <!-- 3D Book -->
@@ -215,6 +236,22 @@
       </div>
     </div>
 
+    <!-- Angel Character -->
+    <div class="book-angel" id="book-angel">
+      <div class="book-angel__float">
+        <div class="book-angel__halo"></div>
+        <img src="./assets/images/angel.png" alt="Cute angel" class="book-angel__img" />
+        <div class="book-angel__sparkles">
+          <span class="angel-sparkle"></span>
+          <span class="angel-sparkle"></span>
+          <span class="angel-sparkle"></span>
+          <span class="angel-sparkle"></span>
+          <span class="angel-sparkle"></span>
+        </div>
+      </div>
+      <p class="book-angel__speech" id="angel-speech">Tap me or the book! ✨</p>
+    </div>
+
     <!-- Page navigation -->
     <div class="book-nav" id="book-nav">
       <button class="book-nav__btn book-nav__btn--prev" id="prev-page" type="button" aria-label="Previous page">
@@ -240,6 +277,7 @@
     <a class="floating-nav__link" href="#letter-section" data-tooltip="Letter">💌</a>
     <a class="floating-nav__link" href="#counter-section" data-tooltip="Timer">⏳</a>
     <a class="floating-nav__link" href="#surprise-section" data-tooltip="Surprise">🎁</a>
+    <a class="floating-nav__link floating-nav__link--wish" id="wish-nav-btn" href="#" data-tooltip="Make a Wish">⭐</a>
   </nav>
 
   <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
@@ -397,28 +435,164 @@
 
     <section class="section reveal" id="gallery-section" data-delay="0.1s">
       <div class="section-copy">
-        <p class="eyebrow">Photo gallery</p>
-        <h2 class="section-title">Small frames from a love that still feels unreal.</h2>
+        <p class="eyebrow">Our Moments</p>
+        <h2 class="section-title">Every picture tells a piece of our story.</h2>
         <div class="section-divider"><span></span></div>
       </div>
 
-      <div class="gallery-grid">
-        <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-1.svg" data-lightbox-caption="The first smile that stayed in my mind.">
-          <img src="./assets/images/memory-1.svg" alt="Romantic memory artwork one" loading="lazy">
-          <span class="gallery-card__overlay">The first smile that stayed in my mind.</span>
+      <!-- Cinematic Slideshow -->
+      <div class="gallery-slideshow" id="gallery-slideshow">
+        <!-- Slide 1 -->
+        <div class="gallery-slide is-active" data-index="0">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-1.jpg" alt="Our beautiful moment together" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">✨ The moment everything changed ✨</span>
+          </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="gallery-slide" data-index="1">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-2.jpg" alt="A precious moment" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">💕 Eyes that speak louder than words 💕</span>
+          </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="gallery-slide" data-index="2">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-3.jpg" alt="Our laughter together" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">💖 Every smile of yours is my favorite 💖</span>
+          </div>
+        </div>
+        <!-- Slide 4 -->
+        <div class="gallery-slide" data-index="3">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-4.jpg" alt="Together forever" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">❤️ A love that feels like home ❤️</span>
+          </div>
+        </div>
+        <!-- Slide 5 -->
+        <div class="gallery-slide" data-index="4">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-5.jpg" alt="Lost in each other" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">🌟 Lost in you, found in us 🌟</span>
+          </div>
+        </div>
+        <!-- Slide 6 -->
+        <div class="gallery-slide" data-index="5">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-6.jpg" alt="Precious moment" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">💓 Moments I never want to forget 💓</span>
+          </div>
+        </div>
+        <!-- Slide 7 -->
+        <div class="gallery-slide" data-index="6">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-7.jpg" alt="Together in love" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">💫 You make my heart feel things 💫</span>
+          </div>
+        </div>
+        <!-- Slide 8 -->
+        <div class="gallery-slide" data-index="7">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-8.jpg" alt="Beautiful smiles" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">🌸 My favorite chapter of our story 🌸</span>
+          </div>
+        </div>
+        <!-- Slide 9 -->
+        <div class="gallery-slide" data-index="8">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-9.jpg" alt="Sweet memories" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">🌙 In your eyes, I see forever 🌙</span>
+          </div>
+        </div>
+        <!-- Slide 10 -->
+        <div class="gallery-slide" data-index="9">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-10.jpg" alt="Our love" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">💝 You are my today and all of my tomorrows 💝</span>
+          </div>
+        </div>
+        <!-- Slide 11 -->
+        <div class="gallery-slide" data-index="10">
+          <div class="gallery-slide__image-wrap">
+            <img src="./assets/images/gallery-11.jpg" alt="Together always" class="gallery-slide__image" />
+          </div>
+          <div class="gallery-slide__particles" aria-hidden="true"></div>
+          <div class="gallery-slide__vignette"></div>
+          <div class="gallery-slide__caption">
+            <span class="gallery-slide__caption-line">⭐ A love written in the stars ⭐</span>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <button class="gallery-nav gallery-nav--prev" id="gallery-prev" type="button" aria-label="Previous photo">
+          <span>‹</span>
         </button>
-        <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-2.svg" data-lightbox-caption="Moonlit thoughts that always lead me back to you.">
-          <img src="./assets/images/memory-2.svg" alt="Romantic memory artwork two" loading="lazy">
-          <span class="gallery-card__overlay">Moonlit thoughts that always lead me back to you.</span>
+        <button class="gallery-nav gallery-nav--next" id="gallery-next" type="button" aria-label="Next photo">
+          <span>›</span>
         </button>
-        <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-3.svg" data-lightbox-caption="Soft moments that feel like forever.">
-          <img src="./assets/images/memory-3.svg" alt="Romantic memory artwork three" loading="lazy">
-          <span class="gallery-card__overlay">Soft moments that feel like forever.</span>
-        </button>
-        <button class="gallery-card" type="button" data-lightbox-src="./assets/images/memory-4.svg" data-lightbox-caption="The kind of love that feels like home.">
-          <img src="./assets/images/memory-4.svg" alt="Romantic memory artwork four" loading="lazy">
-          <span class="gallery-card__overlay">The kind of love that feels like home.</span>
-        </button>
+
+        <!-- Dots -->
+        <div class="gallery-dots" id="gallery-dots">
+          <button class="gallery-dot is-active" data-slide="0" type="button"></button>
+          <button class="gallery-dot" data-slide="1" type="button"></button>
+          <button class="gallery-dot" data-slide="2" type="button"></button>
+          <button class="gallery-dot" data-slide="3" type="button"></button>
+          <button class="gallery-dot" data-slide="4" type="button"></button>
+          <button class="gallery-dot" data-slide="5" type="button"></button>
+          <button class="gallery-dot" data-slide="6" type="button"></button>
+          <button class="gallery-dot" data-slide="7" type="button"></button>
+          <button class="gallery-dot" data-slide="8" type="button"></button>
+          <button class="gallery-dot" data-slide="9" type="button"></button>
+          <button class="gallery-dot" data-slide="10" type="button"></button>
+        </div>
+
+        <!-- Slide counter -->
+        <div class="gallery-counter" id="gallery-counter">
+          <span class="gallery-counter__current">1</span>
+          <span class="gallery-counter__divider">/</span>
+          <span class="gallery-counter__total">11</span>
+        </div>
       </div>
     </section>
 
@@ -436,8 +610,32 @@
         <div class="section-divider"><span></span></div>
       </div>
 
-      <article class="letter-card">
+      <!-- Envelope Opening Animation -->
+      <div class="envelope-wrapper" id="envelope-wrapper">
+        <div class="envelope" id="envelope">
+          <div class="envelope__flap"></div>
+          <div class="envelope__body">
+            <div class="envelope__heart">💌</div>
+            <p class="envelope__label">Tap to open your letter</p>
+          </div>
+        </div>
+      </div>
+
+      <article class="letter-card" id="letter-card-el" style="display:none">
         <span class="letter-card__seal">✦</span>
+        <!-- SVG Signature -->
+        <div class="signature-svg-wrap" aria-hidden="true">
+          <svg class="signature-svg" viewBox="0 0 300 80" fill="none">
+            <path class="signature-path" d="M20,60 C40,10 60,10 80,40 C100,70 110,20 130,40 C150,60 160,30 180,35 C200,40 220,15 250,50 C260,60 270,50 280,40" stroke="url(#sigGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <defs>
+              <linearGradient id="sigGrad" x1="0" y1="0" x2="300" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#d6b896"/>
+                <stop offset="50%" stop-color="#a84858"/>
+                <stop offset="100%" stop-color="#d6b896"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <p class="letter-card__to">Samiksha ❤️,</p>
         <div
           class="letter-card__message"
@@ -474,6 +672,43 @@ Gokul ❤️"
           <div class="counter-card__number" id="days-counter">000</div>
           <div class="counter-card__pulse" id="counter-pulse"></div>
         </div>
+
+        <!-- Detailed Time Breakdown -->
+        <div class="time-breakdown" id="time-breakdown">
+          <div class="time-breakdown__grid">
+            <div class="time-breakdown__item">
+              <span class="time-breakdown__value" id="tb-years">0</span>
+              <span class="time-breakdown__label">Years</span>
+            </div>
+            <div class="time-breakdown__sep">:</div>
+            <div class="time-breakdown__item">
+              <span class="time-breakdown__value" id="tb-months">0</span>
+              <span class="time-breakdown__label">Months</span>
+            </div>
+            <div class="time-breakdown__sep">:</div>
+            <div class="time-breakdown__item">
+              <span class="time-breakdown__value" id="tb-days">0</span>
+              <span class="time-breakdown__label">Days</span>
+            </div>
+            <div class="time-breakdown__sep">:</div>
+            <div class="time-breakdown__item">
+              <span class="time-breakdown__value" id="tb-hours">0</span>
+              <span class="time-breakdown__label">Hours</span>
+            </div>
+            <div class="time-breakdown__sep">:</div>
+            <div class="time-breakdown__item">
+              <span class="time-breakdown__value" id="tb-mins">0</span>
+              <span class="time-breakdown__label">Mins</span>
+            </div>
+            <div class="time-breakdown__sep">:</div>
+            <div class="time-breakdown__item">
+              <span class="time-breakdown__value" id="tb-secs">0</span>
+              <span class="time-breakdown__label">Secs</span>
+            </div>
+          </div>
+          <p class="time-breakdown__heartbeats">💓 Approximately <span id="tb-heartbeats">0</span> heartbeats together</p>
+        </div>
+
         <p class="counter-card__note">
           Ever since February 14, 2024, your love has been turning ordinary days into something unforgettable.
         </p>
@@ -547,12 +782,25 @@ Gokul ❤️"
         <span class="footer-heart">💕</span>
       </div>
       <p class="site-footer__tagline">Written in code, felt in heart</p>
+      <div class="footer-share">
+        <button class="footer-share__btn" id="share-btn" type="button">
+          💝 Share this love story
+        </button>
+      </div>
+      <div class="footer-credits">
+        <div class="footer-credits__badges">
+          <span class="footer-badge">✦ Handcrafted</span>
+          <span class="footer-badge">❤️ With Love</span>
+          <span class="footer-badge">✨ For Samiksha</span>
+        </div>
+      </div>
     </footer>
   </main>
 
   <div class="modal" id="surprise-modal" hidden>
     <div class="modal__backdrop" data-close-surprise></div>
     <div class="modal__heart-rain" id="modal-heart-rain" aria-hidden="true"></div>
+    <canvas class="modal__sparkle-shower" id="modal-sparkle-shower" aria-hidden="true"></canvas>
     <div class="modal__panel modal__panel--surprise">
       <button class="modal__close" type="button" data-close-surprise aria-label="Close surprise">×</button>
       <div class="modal__glow-orb" aria-hidden="true"></div>
@@ -562,10 +810,33 @@ Gokul ❤️"
         Every line here, every glow, every beat of this page was made to carry one simple truth:
         you matter to me more than words ever fully can.
       </p>
+      <div class="modal__love-meter-final">
+        <div class="final-love-bar">
+          <div class="final-love-bar__fill" id="final-love-fill"></div>
+        </div>
+        <p class="final-love-text">Love Level: <span id="final-love-pct">100</span>% ∞</p>
+      </div>
       <div class="modal__pulse-rings" aria-hidden="true">
         <span class="modal__ring"></span>
         <span class="modal__ring"></span>
         <span class="modal__ring"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wish Modal -->
+  <div class="modal" id="wish-modal" hidden>
+    <div class="modal__backdrop" data-close-wish></div>
+    <div class="modal__panel modal__panel--wish">
+      <button class="modal__close" type="button" data-close-wish aria-label="Close wish">×</button>
+      <div class="wish-content">
+        <div class="wish-star-icon">⭐</div>
+        <h3>Make a Wish Together ✨</h3>
+        <p>Close your eyes, think of something beautiful, and tap the star...</p>
+        <button class="wish-button" id="wish-grant-btn" type="button">
+          ✨ Grant Our Wish
+        </button>
+        <p class="wish-result" id="wish-result" hidden></p>
       </div>
     </div>
   </div>

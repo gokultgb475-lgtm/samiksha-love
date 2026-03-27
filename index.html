@@ -30,6 +30,9 @@
     </div>
   </div>
 
+  <!-- Dynamic Mood Gradient Overlay -->
+  <div class="mood-gradient" id="mood-gradient" aria-hidden="true"></div>
+
   <!-- Ambient background -->
   <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
   <div class="aurora-backdrop" id="aurora-backdrop" aria-hidden="true">
@@ -47,6 +50,22 @@
   <!-- Floating particles behind the book -->
   <div class="heart-field" id="heart-field" aria-hidden="true"></div>
   <div class="sparkle-field" id="sparkle-field" aria-hidden="true"></div>
+
+  <!-- Floating Love Notes -->
+  <div class="floating-love-notes" id="floating-love-notes" aria-hidden="true"></div>
+
+  <!-- Cinematic Film Grain -->
+  <div class="film-grain" id="film-grain" aria-hidden="true"></div>
+
+  <!-- Cinematic Light Leak Canvas -->
+  <canvas class="light-leak-canvas" id="light-leak-canvas" aria-hidden="true"></canvas>
+
+  <!-- Morphing Gradient Blobs -->
+  <div class="morph-blobs" id="morph-blobs" aria-hidden="true">
+    <div class="morph-blob morph-blob--1"></div>
+    <div class="morph-blob morph-blob--2"></div>
+    <div class="morph-blob morph-blob--3"></div>
+  </div>
 
   <!-- Custom cursors -->
   <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
@@ -274,8 +293,10 @@
     <a class="floating-nav__link" href="#build-up-section" data-tooltip="Story">📖</a>
     <a class="floating-nav__link" href="#memory-video-section" data-tooltip="Memories">🎬</a>
     <a class="floating-nav__link" href="#gallery-section" data-tooltip="Gallery">🖼️</a>
+    <a class="floating-nav__link" href="#love-things-section" data-tooltip="Love List">💝</a>
     <a class="floating-nav__link" href="#letter-section" data-tooltip="Letter">💌</a>
     <a class="floating-nav__link" href="#counter-section" data-tooltip="Timer">⏳</a>
+    <a class="floating-nav__link" href="#zodiac-section" data-tooltip="Stars">⭐</a>
     <a class="floating-nav__link" href="#surprise-section" data-tooltip="Surprise">🎁</a>
     <a class="floating-nav__link floating-nav__link--wish" id="wish-nav-btn" href="#" data-tooltip="Make a Wish">⭐</a>
   </nav>
@@ -317,6 +338,12 @@
 
   <main class="main-stage" id="main-stage">
     <section class="hero section" id="home">
+      <!-- Parallax depth layers -->
+      <div class="hero__depth-layers" aria-hidden="true">
+        <div class="hero__depth-layer hero__depth-layer--1"></div>
+        <div class="hero__depth-layer hero__depth-layer--2"></div>
+        <div class="hero__depth-layer hero__depth-layer--3"></div>
+      </div>
       <div class="hero__halo">
         <!-- Orbital rings -->
         <div class="hero__orbital hero__orbital--1"></div>
@@ -337,7 +364,7 @@
           </svg>
         </div>
         <p class="eyebrow">A digital love story</p>
-        <h1 class="hero__title glow-text">Every chapter in my heart still leads back to you.</h1>
+        <h1 class="hero__title glow-text spotlight-text" id="hero-title">Every chapter in my heart still leads back to you.</h1>
         <p class="hero__lead">
           I turned feelings into light, motion, music, and memories… just to make you smile tonight.
         </p>
@@ -374,15 +401,18 @@
       </div>
 
       <div class="story-grid">
-        <article class="story-panel reveal" data-delay="0.12s">
+        <article class="story-panel reveal neon-border-card" data-delay="0.12s">
+          <div class="neon-border-trace"></div>
           <span class="story-panel__index">01</span>
           <p>You made ordinary moments feel cinematic, like even silence had a beautiful soundtrack.</p>
         </article>
-        <article class="story-panel reveal" data-delay="0.18s">
+        <article class="story-panel reveal neon-border-card" data-delay="0.18s">
+          <div class="neon-border-trace"></div>
           <span class="story-panel__index">02</span>
           <p>Your smile still softens every hard day, and somehow turns heaviness into warmth.</p>
         </article>
-        <article class="story-panel reveal" data-delay="0.24s">
+        <article class="story-panel reveal neon-border-card" data-delay="0.24s">
+          <div class="neon-border-trace"></div>
           <span class="story-panel__index">03</span>
           <p>Being close to you made me understand that home can be a person, and for me that person is you.</p>
         </article>
@@ -603,6 +633,48 @@
       <div class="glow-separator__line"></div>
     </div>
 
+    <!-- ✦ THINGS I LOVE ABOUT YOU — Typewriter Carousel -->
+    <section class="section reveal" id="love-things-section" data-delay="0.1s">
+      <div class="section-copy">
+        <p class="eyebrow">Heart confessions</p>
+        <h2 class="section-title">Things I Love About You</h2>
+        <div class="section-divider"><span></span></div>
+      </div>
+
+      <div class="love-things-card">
+        <div class="love-things__glow-ring" aria-hidden="true"></div>
+        <div class="love-things__counter">
+          <span class="love-things__current" id="love-thing-num">01</span>
+          <span class="love-things__divider">/</span>
+          <span class="love-things__total" id="love-thing-total">∞</span>
+        </div>
+        <div class="love-things__typewriter" id="love-things-text">
+          <!-- Populated by JS -->
+        </div>
+        <div class="love-things__controls">
+          <button class="love-things__btn" id="love-things-prev" type="button" aria-label="Previous">
+            <span>‹</span>
+          </button>
+          <div class="love-things__heart-indicator">
+            <span class="love-things__heart-beat">💖</span>
+          </div>
+          <button class="love-things__btn" id="love-things-next" type="button" aria-label="Next">
+            <span>›</span>
+          </button>
+        </div>
+        <div class="love-things__progress">
+          <div class="love-things__progress-fill" id="love-things-progress-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">❦</span>
+      <div class="glow-separator__line"></div>
+    </div>
+
     <section class="section reveal" id="letter-section" data-delay="0.12s">
       <div class="section-copy">
         <p class="eyebrow">Love letter</p>
@@ -668,6 +740,8 @@ Gokul ❤️"
       <div class="counter-card">
         <p class="eyebrow">Our time</p>
         <h2 class="section-title">We've been together for <span id="days-inline">0</span> days ❤️</h2>
+        <!-- Interactive Heart Visualization -->
+        <canvas class="heartbeat-visualizer" id="heartbeat-visualizer" aria-hidden="true"></canvas>
         <div class="counter-card__heartbeat">
           <div class="counter-card__number" id="days-counter">000</div>
           <div class="counter-card__pulse" id="counter-pulse"></div>
@@ -743,8 +817,74 @@ Gokul ❤️"
       <div class="glow-separator__line"></div>
     </div>
 
+    <!-- ✦ OUR ZODIAC CONNECTION -->
+    <section class="section reveal" id="zodiac-section" data-delay="0.14s">
+      <div class="section-copy">
+        <p class="eyebrow">Written in the stars</p>
+        <h2 class="section-title">Our Zodiac Connection</h2>
+        <div class="section-divider"><span></span></div>
+      </div>
+
+      <div class="zodiac-card neon-border-card">
+        <div class="neon-border-trace"></div>
+        <div class="zodiac-card__constellation" aria-hidden="true">
+          <canvas class="zodiac-stars-canvas" id="zodiac-stars-canvas"></canvas>
+        </div>
+        <div class="zodiac-card__signs">
+          <div class="zodiac-sign">
+            <span class="zodiac-sign__symbol">♓</span>
+            <span class="zodiac-sign__name">Pisces</span>
+            <span class="zodiac-sign__label">Samiksha</span>
+          </div>
+          <div class="zodiac-sign__connector">
+            <svg viewBox="0 0 120 40" class="zodiac-connector-svg">
+              <path d="M10,20 Q30,5 60,20 Q90,35 110,20" stroke="url(#zodiacGrad)" stroke-width="1.5" fill="none" stroke-linecap="round" class="zodiac-connector-path"/>
+              <defs>
+                <linearGradient id="zodiacGrad" x1="0" y1="0" x2="120" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#d6b896"/>
+                  <stop offset="50%" stop-color="#a84858"/>
+                  <stop offset="100%" stop-color="#d6b896"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="zodiac-heart-link">❤️</span>
+          </div>
+          <div class="zodiac-sign">
+            <span class="zodiac-sign__symbol">♒</span>
+            <span class="zodiac-sign__name">Aquarius</span>
+            <span class="zodiac-sign__label">Gokul</span>
+          </div>
+        </div>
+        <div class="zodiac-card__quote">
+          <p>“A Pisces and Aquarius love is a connection between the dreamer and the visionary — two souls destined to create something extraordinary together.”</p>
+        </div>
+        <div class="zodiac-card__traits">
+          <div class="zodiac-trait">
+            <span class="zodiac-trait__icon">🌊</span>
+            <span class="zodiac-trait__text">Depth meets Innovation</span>
+          </div>
+          <div class="zodiac-trait">
+            <span class="zodiac-trait__icon">✨</span>
+            <span class="zodiac-trait__text">Intuition meets Intelligence</span>
+          </div>
+          <div class="zodiac-trait">
+            <span class="zodiac-trait__icon">🔥</span>
+            <span class="zodiac-trait__text">Passion meets Purpose</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Glowing Separator -->
+    <div class="glow-separator reveal" data-delay="0.1s">
+      <div class="glow-separator__line"></div>
+      <span class="glow-separator__ornament">✦</span>
+      <div class="glow-separator__line"></div>
+    </div>
+
     <section class="section reveal" id="surprise-section" data-delay="0.16s">
-      <div class="finale-card">
+      <div class="finale-card neon-border-card">
+        <div class="neon-border-trace"></div>
         <p class="eyebrow">Interactive ending</p>
         <h2 class="section-title">One last surprise before the story fades into a heartbeat.</h2>
         <p class="section-subtitle">
@@ -773,6 +913,8 @@ Gokul ❤️"
     </section>
 
     <footer class="site-footer reveal" id="footer-section" data-delay="0.18s">
+      <!-- Shooting Stars Canvas -->
+      <canvas class="shooting-stars-canvas" id="shooting-stars-canvas" aria-hidden="true"></canvas>
       <p class="site-footer__line">Made with ❤️ by Gokul</p>
       <div class="site-footer__hearts">
         <span class="footer-heart">💕</span>
@@ -782,6 +924,13 @@ Gokul ❤️"
         <span class="footer-heart">💕</span>
       </div>
       <p class="site-footer__tagline">Written in code, felt in heart</p>
+      <!-- Romantic Promise Ribbon -->
+      <div class="promise-ribbon reveal" id="promise-ribbon" data-delay="0.2s">
+        <div class="promise-ribbon__glow"></div>
+        <p class="promise-ribbon__text">
+          "I promise to keep choosing you, every single day, in every universe, in every lifetime." 💍
+        </p>
+      </div>
       <div class="footer-share">
         <button class="footer-share__btn" id="share-btn" type="button">
           💝 Share this love story

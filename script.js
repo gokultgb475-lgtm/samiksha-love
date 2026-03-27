@@ -671,7 +671,7 @@ function updateScrollParallax() {
   root.style.setProperty('--scroll-shift', `${shift.toFixed(2)}px`);
   if (scrollProgress) { const sh=document.documentElement.scrollHeight-window.innerHeight; scrollProgress.style.width=`${sh>0?(window.scrollY/sh)*100:0}%`; }
   if (floatingNav) {
-    const secs=['home','build-up-section','memory-video-section','gallery-section','letter-section','counter-section','surprise-section'];
+    const secs=['home','build-up-section','memory-video-section','gallery-section','love-things-section','letter-section','counter-section','zodiac-section','surprise-section'];
     let active=secs[0];
     for (const id of secs) { const el=document.getElementById(id); if(el&&el.getBoundingClientRect().top<=window.innerHeight*.4) active=id; }
     floatingNav.querySelectorAll('.floating-nav__link').forEach(l=>l.classList.toggle('is-active',l.getAttribute('href')===`#${active}`));
@@ -1126,7 +1126,7 @@ function initScrollParticles() {
   }
 
   // Burst particles at section reveal
-  const sectionIds = ['build-up-section', 'memory-video-section', 'gallery-section', 'letter-section', 'counter-section', 'surprise-section'];
+  const sectionIds = ['build-up-section', 'memory-video-section', 'gallery-section', 'love-things-section', 'letter-section', 'counter-section', 'zodiac-section', 'surprise-section'];
   const burstTriggered = new Set();
   const burstObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -1167,8 +1167,10 @@ function initSectionEmojiRain() {
     'build-up-section': ['✨', '⭐', '💫'],
     'memory-video-section': ['🎬', '🌟', '✨'],
     'gallery-section': ['🖼️', '🌸', '🌺'],
+    'love-things-section': ['💖', '💝', '✨'],
     'letter-section': ['💌', '❤️', '💕'],
     'counter-section': ['⏳', '💖', '💓'],
+    'zodiac-section': ['✨', '⭐', '🌟'],
     'surprise-section': ['🎁', '🎉', '🎊']
   };
   const count = mobileLike ? 6 : 12;
@@ -1241,6 +1243,609 @@ function updateScrollIndicator() {
   }
 }
 
+/* ═══════════════════════════════════════════════════
+   THINGS I LOVE ABOUT YOU — Typewriter Carousel
+   ═══════════════════════════════════════════════════ */
+const LOVE_THINGS = [
+  "The way your eyes light up when you laugh",
+  "How you make every ordinary moment feel magical",
+  "Your voice when you say my name",
+  "The way you care about the little things",
+  "Your courage to love deeply and fearlessly",
+  "How you always know exactly what to say",
+  "The warmth of your hand in mine",
+  "Your beautiful smile that heals everything",
+  "The way you see beauty in everything around you",
+  "How you make me want to be a better person",
+  "Your kindness — it's the most beautiful thing about you",
+  "The feeling of home when I'm with you",
+  "How you turn my worst days into the best ones",
+  "Your silly laugh that makes my heart skip",
+  "The way you believe in us, even when things are hard"
+];
+
+function initLoveThingsCarousel() {
+  const textEl = document.getElementById('love-things-text');
+  const numEl = document.getElementById('love-thing-num');
+  const progressFill = document.getElementById('love-things-progress-fill');
+  const prevBtn = document.getElementById('love-things-prev');
+  const nextBtn = document.getElementById('love-things-next');
+  if (!textEl) return;
+
+  let currentIndex = 0;
+  let typeTimer = null;
+  let autoTimer = null;
+  let isTyping = false;
+  const AUTO_INTERVAL = 6000;
+
+  function typeLoveThing(text, callback) {
+    if (isTyping && typeTimer) clearInterval(typeTimer);
+    isTyping = true;
+    textEl.innerHTML = '';
+    textEl.classList.add('typing-caret');
+    
+    if (prefersReducedMotion) {
+      textEl.innerHTML = text;
+      textEl.classList.remove('typing-caret');
+      isTyping = false;
+      if (callback) callback();
+      return;
+    }
+
+    let idx = 0;
+    typeTimer = setInterval(() => {
+      idx++;
+      textEl.textContent = text.slice(0, idx);
+      if (idx >= text.length) {
+        clearInterval(typeTimer);
+        textEl.classList.remove('typing-caret');
+        isTyping = false;
+        if (callback) callback();
+      }
+    }, 35);
+  }
+
+  function showThing(index) {
+    currentIndex = ((index % LOVE_THINGS.length) + LOVE_THINGS.length) % LOVE_THINGS.length;
+    if (numEl) numEl.textContent = String(currentIndex + 1).padStart(2, '0');
+    
+    // Reset progress
+    if (progressFill) {
+      progressFill.style.transition = 'none';
+      progressFill.style.width = '0%';
+      void progressFill.offsetWidth;
+      progressFill.style.transition = `width ${AUTO_INTERVAL}ms linear`;
+      progressFill.style.width = '100%';
+    }
+    
+    typeLoveThing(LOVE_THINGS[currentIndex]);
+  }
+
+  function nextThing() {
+    clearInterval(autoTimer);
+    showThing(currentIndex + 1);
+    autoTimer = setInterval(() => showThing(currentIndex + 1), AUTO_INTERVAL);
+  }
+  function prevThing() {
+    clearInterval(autoTimer);
+    showThing(currentIndex - 1);
+    autoTimer = setInterval(() => showThing(currentIndex + 1), AUTO_INTERVAL);
+  }
+
+  if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevThing(); });
+  if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextThing(); });
+
+  // Start when visible
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        showThing(0);
+        autoTimer = setInterval(() => showThing(currentIndex + 1), AUTO_INTERVAL);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  const section = document.getElementById('love-things-section');
+  if (section) obs.observe(section);
+}
+
+/* ═══════════════════════════════════════════════════
+   FLOATING LOVE NOTES
+   ═══════════════════════════════════════════════════ */
+function initFloatingLoveNotes() {
+  const container = document.getElementById('floating-love-notes');
+  if (!container || prefersReducedMotion || mobileLike) return;
+
+  const notes = [
+    "You are my sunshine",
+    "Forever & always",
+    "My heart is yours",
+    "You complete me",
+    "Love beyond words",
+    "My favorite person",
+    "Dream come true",
+    "Meant to be",
+    "Written in the stars",
+    "My forever love",
+    "Better together",
+    "You are magic",
+    "My brightest star",
+    "Endlessly yours"
+  ];
+
+  function spawnNote() {
+    if (!experienceStarted) return;
+    const note = document.createElement('span');
+    note.className = 'love-note';
+    note.textContent = notes[Math.floor(Math.random() * notes.length)];
+    
+    const fromLeft = Math.random() > 0.5;
+    const startY = 20 + Math.random() * 60; // vh
+    const dur = 18 + Math.random() * 14;
+    
+    note.style.setProperty('--start-x', fromLeft ? '-250px' : '100vw');
+    note.style.setProperty('--start-y', `${startY}vh`);
+    note.style.setProperty('--end-x', fromLeft ? '110vw' : '-250px');
+    note.style.setProperty('--end-y', `${startY - 15 + Math.random() * 30}vh`);
+    note.style.setProperty('--note-duration', `${dur}s`);
+    note.style.setProperty('--note-rotate', `${-5 + Math.random() * 10}deg`);
+    
+    container.appendChild(note);
+    setTimeout(() => note.remove(), dur * 1000 + 500);
+  }
+
+  // Spawn periodically
+  setInterval(spawnNote, 8000);
+  // Initial batch
+  setTimeout(spawnNote, 3000);
+  setTimeout(spawnNote, 6000);
+}
+
+/* ═══════════════════════════════════════════════════
+   DYNAMIC MOOD GRADIENT
+   ═══════════════════════════════════════════════════ */
+function initMoodGradient() {
+  const moodEl = document.getElementById('mood-gradient');
+  if (!moodEl) return;
+
+  const sectionMoods = {
+    'home': ['rgba(168,72,88,.06)', 'rgba(214,184,150,.04)'],
+    'build-up-section': ['rgba(150,125,141,.08)', 'rgba(168,72,88,.05)'],
+    'memory-video-section': ['rgba(100,60,100,.08)', 'rgba(168,72,88,.06)'],
+    'gallery-section': ['rgba(214,184,150,.07)', 'rgba(168,72,88,.04)'],
+    'love-things-section': ['rgba(200,80,120,.08)', 'rgba(214,184,150,.06)'],
+    'letter-section': ['rgba(168,72,88,.09)', 'rgba(150,125,141,.05)'],
+    'counter-section': ['rgba(214,184,150,.08)', 'rgba(168,72,88,.06)'],
+    'zodiac-section': ['rgba(100,80,150,.08)', 'rgba(214,184,150,.06)'],
+    'surprise-section': ['rgba(168,72,88,.1)', 'rgba(214,184,150,.08)']
+  };
+
+  function updateMood() {
+    const sections = Object.keys(sectionMoods);
+    let activeSection = sections[0];
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.5) {
+        activeSection = id;
+      }
+    }
+    const [c1, c2] = sectionMoods[activeSection];
+    moodEl.style.setProperty('--mood-color-1', c1);
+    moodEl.style.setProperty('--mood-color-2', c2);
+  }
+
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(updateMood);
+  }, { passive: true });
+  updateMood();
+}
+
+/* ═══════════════════════════════════════════════════
+   HEARTBEAT VISUALIZER
+   ═══════════════════════════════════════════════════ */
+function initHeartbeatVisualizer() {
+  const canvas = document.getElementById('heartbeat-visualizer');
+  if (!canvas || prefersReducedMotion) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let running = false;
+  let phase = 0;
+
+  function resize() {
+    const rect = canvas.parentElement;
+    canvas.width = Math.min(500, rect ? rect.clientWidth * 0.9 : 500);
+    canvas.height = 80;
+  }
+
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const mid = h / 2;
+
+    // Create gradient for the line
+    const grad = ctx.createLinearGradient(0, 0, w, 0);
+    grad.addColorStop(0, 'rgba(168,72,88,.2)');
+    grad.addColorStop(0.3, 'rgba(168,72,88,.7)');
+    grad.addColorStop(0.5, 'rgba(214,184,150,.9)');
+    grad.addColorStop(0.7, 'rgba(168,72,88,.7)');
+    grad.addColorStop(1, 'rgba(168,72,88,.2)');
+
+    ctx.beginPath();
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    for (let x = 0; x < w; x++) {
+      const t = (x / w) * Math.PI * 4 + phase;
+      let y = mid;
+
+      // Heartbeat pattern: flat → spike → dip → flat
+      const pos = (t % (Math.PI * 2)) / (Math.PI * 2);
+      if (pos > 0.35 && pos < 0.4) {
+        y = mid - 25 * Math.sin((pos - 0.35) / 0.05 * Math.PI);
+      } else if (pos > 0.4 && pos < 0.45) {
+        y = mid + 15 * Math.sin((pos - 0.4) / 0.05 * Math.PI);
+      } else if (pos > 0.5 && pos < 0.55) {
+        y = mid - 12 * Math.sin((pos - 0.5) / 0.05 * Math.PI);
+      } else {
+        y = mid + Math.sin(t * 3) * 1.5;
+      }
+
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Glow effect
+    ctx.globalAlpha = 0.2;
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 2;
+
+    phase += 0.03;
+    requestAnimationFrame(draw);
+  }
+
+  // Start when section is visible
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !running) {
+        running = true;
+        resize();
+        requestAnimationFrame(draw);
+      } else if (!entry.isIntersecting) {
+        running = false;
+      }
+    });
+  }, { threshold: 0.2 });
+  const section = document.getElementById('counter-section');
+  if (section) obs.observe(section);
+  window.addEventListener('optimizedResize', resize);
+}
+
+/* ═══════════════════════════════════════════════════
+   SHOOTING STARS
+   ═══════════════════════════════════════════════════ */
+function initShootingStars() {
+  const canvas = document.getElementById('shooting-stars-canvas');
+  if (!canvas || prefersReducedMotion) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let stars = [];
+  let running = false;
+
+  function resize() {
+    const footer = canvas.parentElement;
+    if (!footer) return;
+    canvas.width = footer.offsetWidth;
+    canvas.height = footer.offsetHeight + 100;
+  }
+
+  function spawnStar() {
+    if (stars.length > 6) return;
+    stars.push({
+      x: Math.random() * canvas.width * 0.8,
+      y: Math.random() * canvas.height * 0.3,
+      len: 40 + Math.random() * 80,
+      speed: 3 + Math.random() * 5,
+      angle: Math.PI / 6 + Math.random() * 0.3,
+      opacity: 0.6 + Math.random() * 0.4,
+      life: 1,
+      trail: []
+    });
+  }
+
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = stars.length - 1; i >= 0; i--) {
+      const s = stars[i];
+      s.x += Math.cos(s.angle) * s.speed;
+      s.y += Math.sin(s.angle) * s.speed;
+      s.life -= 0.008;
+      s.trail.push({ x: s.x, y: s.y });
+      if (s.trail.length > s.len / 2) s.trail.shift();
+
+      if (s.life <= 0 || s.x > canvas.width || s.y > canvas.height) {
+        stars.splice(i, 1);
+        continue;
+      }
+
+      // Draw trail
+      if (s.trail.length > 1) {
+        const trailGrad = ctx.createLinearGradient(
+          s.trail[0].x, s.trail[0].y,
+          s.x, s.y
+        );
+        trailGrad.addColorStop(0, 'transparent');
+        trailGrad.addColorStop(0.5, `rgba(214,184,150,${s.life * 0.3})`);
+        trailGrad.addColorStop(1, `rgba(255,255,255,${s.life * s.opacity})`);
+
+        ctx.beginPath();
+        ctx.strokeStyle = trailGrad;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        for (let j = 0; j < s.trail.length; j++) {
+          if (j === 0) ctx.moveTo(s.trail[j].x, s.trail[j].y);
+          else ctx.lineTo(s.trail[j].x, s.trail[j].y);
+        }
+        ctx.stroke();
+
+        // Head glow
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.life * s.opacity})`;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(214,184,150,${s.life * 0.15})`;
+        ctx.fill();
+      }
+    }
+
+    // Randomly spawn
+    if (Math.random() < 0.015) spawnStar();
+
+    requestAnimationFrame(draw);
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !running) {
+        running = true;
+        resize();
+        requestAnimationFrame(draw);
+      } else if (!entry.isIntersecting) {
+        running = false;
+      }
+    });
+  }, { threshold: 0.1 });
+  const footer = document.getElementById('footer-section');
+  if (footer) obs.observe(footer);
+  window.addEventListener('optimizedResize', resize);
+}
+
+/* ═══════════════════════════════════════════════════
+   CINEMATIC LIGHT LEAK CANVAS
+   ═══════════════════════════════════════════════════ */
+function initLightLeaks() {
+  const canvas = document.getElementById('light-leak-canvas');
+  if (!canvas || prefersReducedMotion || mobileLike) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let leaks = [];
+  let phase = 0;
+
+  function spawnLeak() {
+    if (leaks.length > 3) return;
+    const isGold = Math.random() > 0.4;
+    leaks.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * 0.5,
+      radius: 100 + Math.random() * 250,
+      alpha: 0,
+      maxAlpha: 0.03 + Math.random() * 0.04,
+      fadeIn: true,
+      speed: 0.0003 + Math.random() * 0.0005,
+      driftX: (Math.random() - 0.5) * 0.3,
+      driftY: (Math.random() - 0.5) * 0.15,
+      color: isGold ? [214, 184, 150] : [168, 72, 88]
+    });
+  }
+
+  function draw() {
+    if (!experienceStarted) { requestAnimationFrame(draw); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = leaks.length - 1; i >= 0; i--) {
+      const l = leaks[i];
+      l.x += l.driftX;
+      l.y += l.driftY;
+
+      if (l.fadeIn) {
+        l.alpha += l.speed * 2;
+        if (l.alpha >= l.maxAlpha) l.fadeIn = false;
+      } else {
+        l.alpha -= l.speed;
+        if (l.alpha <= 0) { leaks.splice(i, 1); continue; }
+      }
+
+      const grad = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.radius);
+      grad.addColorStop(0, `rgba(${l.color[0]},${l.color[1]},${l.color[2]},${l.alpha})`);
+      grad.addColorStop(0.5, `rgba(${l.color[0]},${l.color[1]},${l.color[2]},${l.alpha * 0.4})`);
+      grad.addColorStop(1, 'transparent');
+
+      ctx.beginPath();
+      ctx.fillStyle = grad;
+      ctx.arc(l.x, l.y, l.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    phase++;
+    if (phase % 180 === 0) spawnLeak();
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('optimizedResize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  spawnLeak();
+  setTimeout(spawnLeak, 2000);
+  requestAnimationFrame(draw);
+}
+
+/* ═══════════════════════════════════════════════════
+   SPOTLIGHT TEXT — Word-by-word glow on hero title
+   ═══════════════════════════════════════════════════ */
+function initSpotlightText() {
+  const titleEl = document.getElementById('hero-title');
+  if (!titleEl || prefersReducedMotion) return;
+
+  const text = titleEl.textContent.trim();
+  const words = text.split(/\s+/);
+  titleEl.innerHTML = words.map(w =>
+    `<span class="spotlight-word">${w}</span>`
+  ).join(' ');
+
+  const wordSpans = titleEl.querySelectorAll('.spotlight-word');
+  let currentLit = 0;
+
+  function lightNext() {
+    if (!experienceStarted) { setTimeout(lightNext, 500); return; }
+
+    wordSpans.forEach(s => s.classList.remove('is-lit'));
+
+    // Light up 2-3 adjacent words at a time
+    const count = Math.min(3, wordSpans.length);
+    for (let i = 0; i < count; i++) {
+      const idx = (currentLit + i) % wordSpans.length;
+      wordSpans[idx].classList.add('is-lit');
+    }
+
+    currentLit = (currentLit + 1) % wordSpans.length;
+    setTimeout(lightNext, 800);
+  }
+
+  setTimeout(lightNext, 2000);
+}
+
+/* ═══════════════════════════════════════════════════
+   ZODIAC CONSTELLATION CANVAS
+   ═══════════════════════════════════════════════════ */
+function initZodiacStars() {
+  const canvas = document.getElementById('zodiac-stars-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let stars = [];
+  let running = false;
+  let constellationLines = [];
+
+  function resize() {
+    const card = canvas.parentElement;
+    if (!card) return;
+    canvas.width = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+    generateStars();
+  }
+
+  function generateStars() {
+    stars = [];
+    constellationLines = [];
+    const count = Math.floor(canvas.width * canvas.height / 3000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: 0.3 + Math.random() * 1.2,
+        twinkleSpeed: 0.005 + Math.random() * 0.02,
+        twinklePhase: Math.random() * Math.PI * 2,
+        baseAlpha: 0.2 + Math.random() * 0.5
+      });
+    }
+
+    // Create a few constellation "lines" by connecting nearby stars
+    const brightStars = stars.filter(s => s.radius > 0.8).slice(0, 12);
+    for (let i = 0; i < brightStars.length - 1; i++) {
+      const a = brightStars[i];
+      const b = brightStars[i + 1];
+      const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+      if (dist < 200) {
+        constellationLines.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+      }
+    }
+  }
+
+  let frame = 0;
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw constellation lines
+    ctx.strokeStyle = 'rgba(214,184,150,.06)';
+    ctx.lineWidth = 0.5;
+    constellationLines.forEach(l => {
+      ctx.beginPath();
+      ctx.moveTo(l.x1, l.y1);
+      ctx.lineTo(l.x2, l.y2);
+      ctx.stroke();
+    });
+
+    // Draw stars with twinkle
+    stars.forEach(s => {
+      const twinkle = Math.sin(frame * s.twinkleSpeed + s.twinklePhase);
+      const alpha = s.baseAlpha + twinkle * 0.3;
+      if (alpha <= 0) return;
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(214,184,150,${Math.max(0, alpha)})`;
+      ctx.fill();
+
+      // Glow on bright stars
+      if (s.radius > 0.9 && alpha > 0.4) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(214,184,150,${alpha * 0.08})`;
+        ctx.fill();
+      }
+    });
+
+    frame++;
+    requestAnimationFrame(draw);
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !running) {
+        running = true;
+        resize();
+        requestAnimationFrame(draw);
+      } else if (!entry.isIntersecting) {
+        running = false;
+      }
+    });
+  }, { threshold: 0.15 });
+  const section = document.getElementById('zodiac-section');
+  if (section) obs.observe(section);
+  window.addEventListener('optimizedResize', () => { if (running) resize(); });
+}
+
 /* ── Wire up events ── */
 if (beginButton) beginButton.addEventListener('click', async () => { await playMusic(); });
 if (musicToggle) musicToggle.addEventListener('click', async () => { bgMusic.paused ? await playMusic() : pauseMusic(); });
@@ -1299,6 +1904,9 @@ window.addEventListener('load', () => {
     initGallerySlideshow();
     setupEnvelope();
     startTimeBreakdown();
+    initLoveThingsCarousel();
+    initMoodGradient();
+    initSpotlightText();
   });
 
   /* Low priority — defer to idle time */
@@ -1308,6 +1916,11 @@ window.addEventListener('load', () => {
     initScrollParticles();
     initSectionEmojiRain();
     startAnniversaryCountdown();
+    initFloatingLoveNotes();
+    initHeartbeatVisualizer();
+    initShootingStars();
+    initLightLeaks();
+    initZodiacStars();
     setInterval(() => { if(counterAnimated) refreshCounterInstant(); }, 60000);
   };
   if ('requestIdleCallback' in window) {
@@ -1316,3 +1929,4 @@ window.addEventListener('load', () => {
     setTimeout(deferInit, 500);
   }
 });
+

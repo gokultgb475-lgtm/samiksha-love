@@ -3754,10 +3754,42 @@ body.experience-started .heart-constellation-canvas { opacity: .3; }
 /* ═══════════════════════════════════════════════════
    MOBILE RESPONSIVE ADJUSTMENTS
    ═══════════════════════════════════════════════════ */
-@media (max-width: 640px) {
-  .love-fireflies { display: none; }
-  .cinematic-section-glow { display: none; }
-  .aurora-borealis { display: none; }
-  .floating-poem { display: none; }
-  .cursor-love-particle { display: none; }
+@media (max-width: 768px) {
+  :root {
+    --book-w: 92vw;
+    --book-h: 75vh;
+  }
+  
+  .hero__title { font-size: clamp(2rem, 8vw, 3.2rem) !important; line-height: 1.1; }
+  .section-title { font-size: clamp(1.8rem, 7vw, 2.8rem) !important; }
+  .cover__title { font-size: clamp(2rem, 8vw, 3rem) !important; }
+  .cover__author { font-size: 1.4rem !important; }
+  .script-font { font-size: clamp(1.6rem, 7vw, 2.2rem) !important; }
+  .counter-card__number { font-size: clamp(3rem, 12vw, 4.5rem) !important; }
+  .modal__panel h3 { font-size: 1.6rem !important; }
+  .page-text { font-size: 0.95rem !important; line-height: 1.5 !important; }
+
+  .hero__content,
+  .letter-card,
+  .counter-card,
+  .finale-card,
+  .love-compat-card,
+  .daily-quote-card,
+  .heartbeat-sync-card {
+    padding: 1.5rem !important;
+    width: 92% !important;
+  }
+
+  .intro-overlay__line { font-size: clamp(1rem, 4vw, 1.4rem) !important; }
+  .intro-overlay__line--3 { font-size: clamp(1.2rem, 5vw, 1.6rem) !important; }
+
+  .story-grid { grid-template-columns: 1fr; gap: 1rem; }
+  
+  .love-fireflies,
+  .cinematic-section-glow,
+  .aurora-borealis,
+  .floating-poem,
+  .cursor-love-particle { 
+    display: none !important; 
+  }
 }
